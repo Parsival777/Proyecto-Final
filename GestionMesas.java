@@ -1,3 +1,5 @@
+package Proyecto_Final;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -8,12 +10,12 @@ public class GestionMesas {
     private static Scanner scanner = new Scanner(System.in);
 
     public static void menuGestionMesas() {
-        System.out.println("\n=== GESTIÓN DE MESAS ===");
+        System.out.println("\n=== GESTION DE MESAS ===");
         System.out.println("1. Agregar Mesa");
         System.out.println("2. Seleccionar Mesa");
         System.out.println("3. Limpiar Mesa");
-        System.out.println("0. Volver al menú principal");
-        System.out.print("Seleccione una opción: ");
+        System.out.println("0. Volver al menu principal");
+        System.out.print("Seleccione una opcion: ");
 
         procesarOpcionMesas(scanner.nextLine().trim());
     }
@@ -43,17 +45,18 @@ public class GestionMesas {
         System.out.print("Ingrese el número de la mesa: ");
         int numeroMesa = obtenerEnteroPositivoRecursivo("Ingrese el número de la mesa: ", scanner.nextLine().trim(), 0);
 
-        // Verificar si la mesa ya existe
+        
         if (mesas.containsKey(numeroMesa)) {
             System.out.println("La mesa " + numeroMesa + " ya existe. ¿Desea seleccionarla? (s/n)");
             String respuesta = scanner.nextLine().trim().toLowerCase();
 
             if (respuesta.equals("s") || respuesta.equals("si")) {
                 menuMesaEspecifica(mesas.get(numeroMesa));
-            } else {
-                System.out.println("Operación cancelada.");
-                menuGestionMesas();
+                return;
             }
+            
+            System.out.println("Operación cancelada.");
+            menuGestionMesas();
             return;
         }
 
@@ -61,7 +64,7 @@ public class GestionMesas {
         mesas.put(numeroMesa, nuevaMesa);
         System.out.println("Mesa " + numeroMesa + " agregada correctamente.");
 
-        // Mostrar directamente el menú de la mesa recién agregada
+        
         menuMesaEspecifica(nuevaMesa);
     }
 
@@ -82,10 +85,11 @@ public class GestionMesas {
 
         if (mesas.containsKey(numeroMesa)) {
             menuMesaEspecifica(mesas.get(numeroMesa));
-        } else {
-            System.out.println("Mesa no encontrada.");
-            menuGestionMesas();
+            return;
         }
+        
+        System.out.println("Mesa no encontrada.");
+        menuGestionMesas();
     }
 
     private static void menuMesaEspecifica(Mesa mesa) {
@@ -173,34 +177,35 @@ public class GestionMesas {
 
         if (mesas.containsKey(numeroMesa)) {
             limpiarMesaEspecifica(mesas.get(numeroMesa));
-        } else {
-            System.out.println("Mesa no encontrada.");
+            return;
         }
+        
+        System.out.println("Mesa no encontrada.");
     }
 
     private static void limpiarMesaEspecifica(Mesa mesa) {
-        // Registrar ventas antes de limpiar
+        
         if (!mesa.estaVacia()) {
             System.out.println("Registrando ventas de la mesa " + mesa.getNumero() + "...");
 
-            // Calcular total de ventas (simplificado - en una implementación real se sumarían los precios)
+            
             int totalVentas = mesa.obtenerCantidadPedidos();
 
-            // Registrar en estadísticas de ventas
+            
             EstadisticasVentas.registrarVentasMesa(mesa.getNumero(), totalVentas);
 
             System.out.println("Ventas registradas correctamente.");
         }
 
-        // Eliminar la mesa
+        
         mesas.remove(mesa.getNumero());
         System.out.println("Mesa " + mesa.getNumero() + " limpiada y eliminada correctamente.");
 
-        // Volver al menú de gestión de mesas
+        
         menuGestionMesas();
     }
 
-    // Métodos auxiliares para validación de entrada
+    
     private static String obtenerEntradaNoVaciaRecursivo(String mensaje, String input) {
         if (input.isEmpty()) {
             System.out.print("Este campo no puede estar vacío. " + mensaje);
@@ -348,9 +353,9 @@ public class GestionMesas {
                 switch (nivel) {
                     case 1: return "Para Llevar - Urgente";
                     case 2: return "Mesa VIP";
-                    case 3: return "Mesa Regular";
-                    case 4: return "Pedido Online";
-                    case 5: return "Pedido Programado";
+                    case 3: return "Pedido Programado";
+                    case 4: return "Mesa Regular";
+                    case 5: return "Lista de Espera";
                 }
             }
 
