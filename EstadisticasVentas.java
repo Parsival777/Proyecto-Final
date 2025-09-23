@@ -1,7 +1,9 @@
+package src;
+
 import java.util.Scanner;
 
 public class EstadisticasVentas {
-    private static double[] ventasPorHora = new double[100];
+    private static int[] ventasPorHora = new int[100];
     private static int contadorVentas = 0;
     private static Scanner scanner = new Scanner(System.in);
 
@@ -74,21 +76,21 @@ public class EstadisticasVentas {
             return;
         }
 
-        System.out.print("Ventas en la hora (monto total): ");
-        double ventas = obtenerDoublePositivoRecursivo("Ventas en la hora (monto total): ", scanner.nextLine().trim(), 0);
+        System.out.print("Ventas en la hora (cantidad de pedidos): ");
+        int ventas = obtenerEnteroPositivoRecursivo("Ventas en la hora (cantidad de pedidos): ", scanner.nextLine().trim(), 0);
 
         ventasPorHora[contadorVentas++] = ventas;
-        System.out.println("Ventas registradas: $" + ventas);
+        System.out.println("Ventas registradas: " + ventas + " pedidos");
     }
 
     private static void calcularVentaTotal() {
         manejarVentasVacias(() -> {
-            double total = sumaRecursiva(ventasPorHora, contadorVentas - 1);
-            System.out.println("Venta total del día: $" + total);
+            int total = sumaRecursiva(ventasPorHora, contadorVentas - 1);
+            System.out.println("Venta total del día: " + total + " pedidos");
         });
     }
 
-    private static double sumaRecursiva(double[] array, int index) {
+    private static int sumaRecursiva(int[] array, int index) {
         if (index < 0) {
             return 0;
         }
@@ -97,20 +99,20 @@ public class EstadisticasVentas {
 
     private static void calcularVentaPromedio() {
         manejarVentasVacias(() -> {
-            double total = sumaRecursiva(ventasPorHora, contadorVentas - 1);
-            double promedio = total / contadorVentas;
-            System.out.println("Promedio de ventas por hora: $" + String.format("%.2f", promedio));
+            int total = sumaRecursiva(ventasPorHora, contadorVentas - 1);
+            double promedio = (double) total / contadorVentas;
+            System.out.println("Promedio de ventas por hora: " + String.format("%.2f", promedio) + " pedidos");
         });
     }
 
     private static void encontrarHoraPico() {
         manejarVentasVacias(() -> {
-            double maximo = maximoRecursivo(ventasPorHora, contadorVentas - 1, Double.MIN_VALUE);
-            System.out.println("Hora pico de ventas: $" + maximo);
+            int maximo = maximoRecursivo(ventasPorHora, contadorVentas - 1, Integer.MIN_VALUE);
+            System.out.println("Hora pico de ventas: " + maximo + " pedidos");
         });
     }
 
-    private static double maximoRecursivo(double[] array, int index, double max) {
+    private static int maximoRecursivo(int[] array, int index, int max) {
         if (index < 0) {
             return max;
         }
@@ -120,12 +122,12 @@ public class EstadisticasVentas {
 
     private static void encontrarHoraBaja() {
         manejarVentasVacias(() -> {
-            double minimo = minimoRecursivo(ventasPorHora, contadorVentas - 1, Double.MAX_VALUE);
-            System.out.println("Hora baja de ventas: $" + minimo);
+            int minimo = minimoRecursivo(ventasPorHora, contadorVentas - 1, Integer.MAX_VALUE);
+            System.out.println("Hora baja de ventas: " + minimo + " pedidos");
         });
     }
 
-    private static double minimoRecursivo(double[] array, int index, double min) {
+    private static int minimoRecursivo(int[] array, int index, int min) {
         if (index < 0) {
             return min;
         }
@@ -138,7 +140,7 @@ public class EstadisticasVentas {
             System.out.print("Ingrese el número de turnos: ");
             int numTurnos = obtenerEnteroPositivoRecursivo("Ingrese el número de turnos: ", scanner.nextLine().trim(), 0);
 
-            double[] turnos = new double[numTurnos];
+            int[] turnos = new int[numTurnos];
             distribuirRecursivo(ventasPorHora, contadorVentas - 1, turnos, 0);
 
             System.out.println("Distribución de personal por turnos:");
@@ -146,7 +148,7 @@ public class EstadisticasVentas {
         });
     }
 
-    private static void distribuirRecursivo(double[] ventas, int ventaIndex, double[] turnos, int turnoIndex) {
+    private static void distribuirRecursivo(int[] ventas, int ventaIndex, int[] turnos, int turnoIndex) {
         if (ventaIndex < 0) {
             return;
         }
@@ -157,7 +159,7 @@ public class EstadisticasVentas {
         distribuirRecursivo(ventas, ventaIndex - 1, turnos, turnoIndex);
     }
 
-    private static int encontrarTurnoMinimo(double[] turnos, int index, int minIndex) {
+    private static int encontrarTurnoMinimo(int[] turnos, int index, int minIndex) {
         if (index < 0) {
             return minIndex;
         }
@@ -166,12 +168,12 @@ public class EstadisticasVentas {
         return encontrarTurnoMinimo(turnos, index - 1, nuevoMinIndex);
     }
 
-    private static void mostrarDistribucionRecursiva(double[] turnos, int index) {
+    private static void mostrarDistribucionRecursiva(int[] turnos, int index) {
         if (index >= turnos.length) {
             return;
         }
 
-        System.out.println("Turno " + (index + 1) + ": $" + turnos[index] + " asignados");
+        System.out.println("Turno " + (index + 1) + ": " + turnos[index] + " pedidos asignados");
         mostrarDistribucionRecursiva(turnos, index + 1);
     }
 
@@ -181,35 +183,6 @@ public class EstadisticasVentas {
             return;
         }
         action.run();
-    }
-
-    public static void registrarVentasMesa(int numeroMesa, int totalPedidos, double totalVentas) {
-        if (contadorVentas >= ventasPorHora.length) {
-            System.out.println("No se pueden registrar más ventas. Límite alcanzado.");
-            return;
-        }
-        ventasPorHora[contadorVentas++] = totalVentas;
-        System.out.println("Ventas de la mesa " + numeroMesa + " registradas: " + totalPedidos + " pedidos, $" + totalVentas);
-    }
-
-    private static double obtenerDoublePositivoRecursivo(String mensaje, String input, int intentos) {
-        if (intentos > 10) return 1.0;
-
-        boolean esNumero = verificarEsNumeroDecimal(input, 0, true, false);
-
-        if (!esNumero) {
-            System.out.print("Entrada no válida. Por favor, ingrese un número. " + mensaje);
-            return obtenerDoublePositivoRecursivo(mensaje, scanner.nextLine().trim(), intentos + 1);
-        }
-
-        double valor = convertirStringADouble(input, 0, 0.0, 1.0, false);
-
-        if (valor <= 0) {
-            System.out.print("Por favor, ingrese un número positivo. " + mensaje);
-            return obtenerDoublePositivoRecursivo(mensaje, scanner.nextLine().trim(), intentos + 1);
-        }
-
-        return valor;
     }
 
     private static int obtenerEnteroPositivoRecursivo(String mensaje, String input, int intentos) {
@@ -232,6 +205,15 @@ public class EstadisticasVentas {
         return valor;
     }
 
+    public static void registrarVentasMesa(int numeroMesa, int totalVentas) {
+        if (contadorVentas >= ventasPorHora.length) {
+            System.out.println("No se pueden registrar más ventas. Límite alcanzado.");
+            return;
+        }
+        ventasPorHora[contadorVentas++] = totalVentas;
+        System.out.println("Ventas de la mesa " + numeroMesa + " registradas: " + totalVentas + " pedidos");
+    }
+
     private static boolean verificarEsNumero(String str, int index, boolean esNumero) {
         if (index >= str.length()) return esNumero;
         if (!esNumero) return false;
@@ -240,22 +222,6 @@ public class EstadisticasVentas {
         boolean esDigito = (c >= '0' && c <= '9') || (index == 0 && c == '-');
 
         return verificarEsNumero(str, index + 1, esNumero && esDigito);
-    }
-
-    private static boolean verificarEsNumeroDecimal(String str, int index, boolean esNumero, boolean tienePunto) {
-        if (index >= str.length()) return esNumero;
-        if (!esNumero) return false;
-
-        char c = str.charAt(index);
-        boolean esDigito = (c >= '0' && c <= '9');
-        boolean esPunto = (c == '.' && !tienePunto && index > 0);
-        boolean esSigno = (c == '-' && index == 0);
-
-        boolean nuevoTienePunto = tienePunto || esPunto;
-
-        return verificarEsNumeroDecimal(str, index + 1,
-                esNumero && (esDigito || esPunto || esSigno),
-                nuevoTienePunto);
     }
 
     private static int convertirStringAInt(String str, int index, int resultado) {
@@ -270,28 +236,5 @@ public class EstadisticasVentas {
         int nuevoResultado = resultado * 10 + digito;
 
         return convertirStringAInt(str, index + 1, nuevoResultado);
-    }
-
-    private static double convertirStringADouble(String str, int index, double resultado, double divisor, boolean despuesPunto) {
-        if (index >= str.length()) return resultado;
-
-        char c = str.charAt(index);
-        if (c == '-') {
-            return -convertirStringADouble(str, index + 1, 0, 1, false);
-        }
-
-        if (c == '.') {
-            return convertirStringADouble(str, index + 1, resultado, 10, true);
-        }
-
-        int digito = c - '0';
-
-        if (despuesPunto) {
-            double nuevoResultado = resultado + (digito / divisor);
-            return convertirStringADouble(str, index + 1, nuevoResultado, divisor * 10, true);
-        }
-
-        double nuevoResultado = resultado * 10 + digito;
-        return convertirStringADouble(str, index + 1, nuevoResultado, divisor, false);
     }
 }
