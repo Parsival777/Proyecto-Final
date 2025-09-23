@@ -1,3 +1,5 @@
+package src;
+
 import java.util.Scanner;
 
 public class AnalisisVentas {
@@ -6,11 +8,13 @@ public class AnalisisVentas {
     private static Scanner scanner = new Scanner(System.in);
 
     public static void menuAnalisisVentas() {
-        System.out.println("\n=== ANÁLISIS DE DATOS DE VENTAS ===");
+        System.out.println("\n=== ANÁLISIS DE DATOS DE VENTAS (DIVIDE Y VENCERÁS) ===");
         System.out.println("1. Agregar dato de venta diaria");
         System.out.println("2. Ordenar datos de ventas (Quicksort recursivo)");
         System.out.println("3. Buscar dato de venta (Búsqueda binaria recursiva)");
         System.out.println("4. Mostrar datos de ventas");
+        System.out.println("5. Distribuir tareas por departamento (Divide y Vencerás)");
+        System.out.println("6. Calcular eficiencia por turnos (MergeSort recursivo)");
         System.out.println("0. Volver al menú principal");
         System.out.print("Seleccione una opción: ");
 
@@ -28,6 +32,8 @@ public class AnalisisVentas {
         procesarOpcion(input, "2", AnalisisVentas::ordenarDatosVentas);
         procesarOpcion(input, "3", AnalisisVentas::buscarDatoVenta);
         procesarOpcion(input, "4", AnalisisVentas::mostrarDatosVentas);
+        procesarOpcion(input, "5", AnalisisVentas::distribuirTareasDivideVenceras); // NUEVO
+        procesarOpcion(input, "6", AnalisisVentas::ordenarMergeSort); // NUEVO
 
         procesarCasoDefault(input);
     }
@@ -46,10 +52,10 @@ public class AnalisisVentas {
     }
 
     private static void procesarCasoDefault(String input) {
-        boolean esValida = verificarOpcionValida(input, new String[]{"0", "1", "2", "3", "4"}, 0);
+        boolean esValida = verificarOpcionValida(input, new String[]{"0", "1", "2", "3", "4", "5", "6"}, 0);
 
         if (!esValida) {
-            System.out.println("Opción no válida. Por favor, ingrese una opción entre 0 y 4.");
+            System.out.println("Opción no válida. Por favor, ingrese una opción entre 0 y 6.");
             menuAnalisisVentas();
         }
     }
@@ -60,6 +66,7 @@ public class AnalisisVentas {
         return verificarOpcionValida(input, opciones, index + 1);
     }
 
+    // ========== MÉTODOS EXISTENTES (se mantienen igual) ==========
     private static void agregarDatoVenta() {
         manejarCapacidadDatos();
     }
@@ -161,18 +168,10 @@ public class AnalisisVentas {
 
         int medio = inicio + (fin - inicio) / 2;
 
-        return manejarComparacionBusqueda(objetivo, inicio, fin, medio);
-    }
-
-    private static int manejarComparacionBusqueda(int objetivo, int inicio, int fin, int medio) {
         if (datosVentas[medio] == objetivo) {
             return medio;
         }
 
-        return manejarComparacionMayorMenor(objetivo, inicio, fin, medio);
-    }
-
-    private static int manejarComparacionMayorMenor(int objetivo, int inicio, int fin, int medio) {
         if (datosVentas[medio] > objetivo) {
             return busquedaBinariaRecursiva(objetivo, inicio, medio - 1);
         }
@@ -211,6 +210,121 @@ public class AnalisisVentas {
         action.run();
     }
 
+    // ========== NUEVOS MÉTODOS DIVIDE Y VENCERÁS ==========
+
+    // 5. Distribuir tareas por departamento (Divide y Vencerás)
+    private static void distribuirTareasDivideVenceras() {
+        System.out.print("Ingrese la cantidad total de tareas a distribuir: ");
+        int totalTareas = obtenerEnteroPositivoRecursivo("Ingrese la cantidad total de tareas: ", scanner.nextLine().trim(), 0);
+        
+        System.out.print("Ingrese la cantidad de departamentos: ");
+        int numDepartamentos = obtenerEnteroPositivoRecursivo("Ingrese la cantidad de departamentos: ", scanner.nextLine().trim(), 0);
+
+        int[] tareasPorDepto = new int[numDepartamentos];
+        distribuirTareasRecursivo(totalTareas, numDepartamentos, tareasPorDepto, 0);
+
+        System.out.println("Distribución de tareas por departamento:");
+        mostrarDistribucionRecursiva(tareasPorDepto, 0);
+    }
+
+    private static void distribuirTareasRecursivo(int tareasRestantes, int deptosRestantes, int[] distribucion, int index) {
+        if (deptosRestantes == 0 || tareasRestantes == 0) {
+            return;
+        }
+
+        // Divide el problema: asigna una parte proporcional a cada departamento
+        int tareasParaEsteDepto = (int) Math.ceil((double) tareasRestantes / deptosRestantes);
+        distribucion[index] = tareasParaEsteDepto;
+
+        // Vencer: resolver para los departamentos restantes
+        distribuirTareasRecursivo(tareasRestantes - tareasParaEsteDepto, deptosRestantes - 1, distribucion, index + 1);
+    }
+
+    // 6. MergeSort recursivo para ordenar eficiencia por turnos
+    private static void ordenarMergeSort() {
+        manejarDatosVacios(() -> {
+            int[] copiaDatos = new int[contador];
+            System.arraycopy(datosVentas, 0, copiaDatos, 0, contador);
+            
+            mergeSortRecursivo(copiaDatos, 0, contador - 1);
+            
+            System.out.println("Datos ordenados con MergeSort:");
+            mostrarArrayRecursivo(copiaDatos, 0);
+        });
+    }
+
+    private static void mergeSortRecursivo(int[] array, int inicio, int fin) {
+        if (inicio < fin) {
+            int medio = (inicio + fin) / 2;
+            
+            // Divide: ordenar las dos mitades
+            mergeSortRecursivo(array, inicio, medio);
+            mergeSortRecursivo(array, medio + 1, fin);
+            
+            // Vencer: combinar las mitades ordenadas
+            mergeRecursivo(array, inicio, medio, fin);
+        }
+    }
+
+    private static void mergeRecursivo(int[] array, int inicio, int medio, int fin) {
+        int[] temp = new int[fin - inicio + 1];
+        mergeRecursivoAux(array, temp, inicio, medio, medio + 1, fin, 0);
+        
+        // Copiar el array temporal al original
+        copiarArrayRecursivo(temp, array, inicio, 0);
+    }
+
+    private static void mergeRecursivoAux(int[] array, int[] temp, int leftStart, int leftEnd, int rightStart, int rightEnd, int tempIndex) {
+        if (leftStart > leftEnd && rightStart > rightEnd) {
+            return;
+        }
+
+        if (leftStart > leftEnd) {
+            temp[tempIndex] = array[rightStart];
+            mergeRecursivoAux(array, temp, leftStart, leftEnd, rightStart + 1, rightEnd, tempIndex + 1);
+        } else if (rightStart > rightEnd) {
+            temp[tempIndex] = array[leftStart];
+            mergeRecursivoAux(array, temp, leftStart + 1, leftEnd, rightStart, rightEnd, tempIndex + 1);
+        } else if (array[leftStart] <= array[rightStart]) {
+            temp[tempIndex] = array[leftStart];
+            mergeRecursivoAux(array, temp, leftStart + 1, leftEnd, rightStart, rightEnd, tempIndex + 1);
+        } else {
+            temp[tempIndex] = array[rightStart];
+            mergeRecursivoAux(array, temp, leftStart, leftEnd, rightStart + 1, rightEnd, tempIndex + 1);
+        }
+    }
+
+    private static void copiarArrayRecursivo(int[] origen, int[] destino, int destStart, int index) {
+        if (index >= origen.length) {
+            return;
+        }
+        destino[destStart + index] = origen[index];
+        copiarArrayRecursivo(origen, destino, destStart, index + 1);
+    }
+
+    private static void mostrarArrayRecursivo(int[] array, int index) {
+        if (index >= array.length) {
+            System.out.println();
+            return;
+        }
+
+        System.out.print(array[index] + " ");
+        if ((index + 1) % 10 == 0) {
+            System.out.println();
+        }
+        mostrarArrayRecursivo(array, index + 1);
+    }
+
+    private static void mostrarDistribucionRecursiva(int[] distribucion, int index) {
+        if (index >= distribucion.length) {
+            return;
+        }
+
+        System.out.println("Departamento " + (index + 1) + ": " + distribucion[index] + " tareas");
+        mostrarDistribucionRecursiva(distribucion, index + 1);
+    }
+
+    // ========== MÉTODOS AUXILIARES EXISTENTES ==========
     public static void registrarVentaDiaria(int venta) {
         if (contador >= datosVentas.length) {
             System.out.println("No se pueden agregar más datos de ventas.");
@@ -231,6 +345,26 @@ public class AnalisisVentas {
         }
 
         return convertirStringAInt(input, 0, 0);
+    }
+
+    private static int obtenerEnteroPositivoRecursivo(String mensaje, String input, int intentos) {
+        if (intentos > 10) return 1;
+
+        boolean esNumero = verificarEsNumero(input, 0, true);
+
+        if (!esNumero) {
+            System.out.print("Entrada no válida. Por favor, ingrese un número. " + mensaje);
+            return obtenerEnteroPositivoRecursivo(mensaje, scanner.nextLine().trim(), intentos + 1);
+        }
+
+        int valor = convertirStringAInt(input, 0, 0);
+
+        if (valor <= 0) {
+            System.out.print("Por favor, ingrese un número positivo. " + mensaje);
+            return obtenerEnteroPositivoRecursivo(mensaje, scanner.nextLine().trim(), intentos + 1);
+        }
+
+        return valor;
     }
 
     private static boolean verificarEsNumero(String str, int index, boolean esNumero) {
