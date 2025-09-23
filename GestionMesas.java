@@ -1,3 +1,5 @@
+package src;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
@@ -10,7 +12,7 @@ public class GestionMesas {
     public static void menuGestionMesas() {
         System.out.println("\n=== GESTIÓN DE MESAS ===");
 
-        // Mostrar mesas existentes como opciones
+        
         if (!mesas.isEmpty()) {
             System.out.println("Mesas activas:");
             for (Integer numero : mesas.keySet()) {
@@ -36,7 +38,7 @@ public class GestionMesas {
             return;
         }
 
-        // Verificar si es un número de mesa válido
+        
         try {
             int numeroMesa = Integer.parseInt(input);
             if (mesas.containsKey(numeroMesa)) {
@@ -44,7 +46,7 @@ public class GestionMesas {
                 return;
             }
         } catch (NumberFormatException e) {
-            // No es un número, continuar
+            
         }
 
         System.out.println("Opción no válida.");
@@ -158,15 +160,15 @@ public class GestionMesas {
 
     private static void limpiarMesaEspecifica(Mesa mesa) {
         if (!mesa.estaVacia()) {
-            // Generar ticket
+            
             MenuAlimentos.Ticket ticket = mesa.generarTicket();
             ticket.mostrarTicket();
 
-            // Registrar ventas para estadísticas
+            
             int totalPedidos = ticket.getCantidadPedidos();
             double totalVentas = ticket.calcularTotal();
 
-            EstadisticasVentas.registrarVentasMesa(mesa.getNumero(), totalPedidos, totalVentas);
+            EstadisticasVentas.registrarVentasMesa(mesa.getNumero(), totalPedidos);
             AnalisisVentas.registrarVentaDiaria((int) totalVentas);
 
             System.out.println("Ventas registradas correctamente.");
@@ -177,7 +179,7 @@ public class GestionMesas {
         menuGestionMesas();
     }
 
-    // Métodos auxiliares para entrada de datos (se mantienen igual)
+    
     private static String obtenerEntradaNoVaciaRecursivo(String mensaje, String input) {
         if (input.isEmpty()) {
             System.out.print("Este campo no puede estar vacío. " + mensaje);
