@@ -1,0 +1,22 @@
+ID,Nombre del Producto,Stock,Unidad
+101,Cafe en Grano Lavazza,12.5,kg
+102,Leche Entera,45.5,L
+103,Coca-Cola (Lata),280,unidades
+104,Limones,12,kg
+105,Naranjas,15,kg
+106,Agua Mineral,180,unidades
+107,Te Negro,3.5,kg
+201,Pan para Panini,120,unidades
+202,Prosciutto Crudo,4.8,kg
+203,Pollo,12.5,kg
+204,Mozzarella Fresca,8.2,kg
+205,Tomates Roma,15.5,kg
+206,Croissants,85,unidades
+207,Harina 00,25.5,kg
+301,Mascarpone,4.2,kg
+302,Helado de Vainilla,8.5,L
+303,Helado de Chocolate,7.2,L
+304,Ricotta,6.8,kg
+305,Biscotti,200,unidades
+306,Chocolate en Polvo,8.2,kg
+
