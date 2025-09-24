@@ -110,7 +110,7 @@ public class Main {
             System.out.println("✓ Producto encontrado:");
             System.out.println(producto);
         } else {
-            System.out.println("❌ Producto no encontrado con ID: " + id);
+            System.out.println("Producto no encontrado con ID: " + id);
         }
     }
 
@@ -131,7 +131,7 @@ public class Main {
         }
 
         if (!encontrado) {
-            System.out.println("❌ No se encontraron productos con: '" + nombre + "'");
+            System.out.println(" No se encontraron productos con: '" + nombre + "'");
         }
     }
 
@@ -158,7 +158,7 @@ public class Main {
 
             MenuAlimentos.ProductoMenu producto = MenuAlimentos.obtenerProducto(opcionProducto);
             if (producto == null) {
-                System.out.println("❌ Producto no válido");
+                System.out.println("Producto no válido");
                 continue;
             }
 
