@@ -1,11 +1,11 @@
 ID,Nombre del Producto,Stock,Unidad
-101,Café en Grano Lavazza,12.5,kg
+101,Cafe en Grano Lavazza,12.5,kg
 102,Leche Entera,45.5,L
 103,Coca-Cola (Lata),280,unidades
 104,Limones,12,kg
 105,Naranjas,15,kg
 106,Agua Mineral,180,unidades
-107,Té Negro,3.5,kg
+107,Te Negro,3.5,kg
 201,Pan para Panini,120,unidades
 202,Prosciutto Crudo,4.8,kg
 203,Pollo,12.5,kg
@@ -19,3 +19,4 @@ ID,Nombre del Producto,Stock,Unidad
 304,Ricotta,6.8,kg
 305,Biscotti,200,unidades
 306,Chocolate en Polvo,8.2,kg
+
