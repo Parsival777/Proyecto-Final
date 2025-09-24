@@ -4,15 +4,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Scanner;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.io.IOException;
+import java.time.LocalDate;
 
 public class GestionMesas {
     private static Map<Integer, Mesa> mesas = new HashMap<>();
     private static Scanner scanner = new Scanner(System.in);
+    private static double ventasDiarias = 0.0;
 
     public static void menuGestionMesas() {
         System.out.println("\n=== GESTIÓN DE MESAS ===");
 
-        
         if (!mesas.isEmpty()) {
             System.out.println("Mesas activas:");
             for (Integer numero : mesas.keySet()) {
@@ -29,7 +33,6 @@ public class GestionMesas {
 
     private static void procesarOpcionMesas(String input) {
         if (input.equals("0")) {
-            System.out.println("Volviendo al menú principal...");
             return;
         }
 
@@ -38,16 +41,13 @@ public class GestionMesas {
             return;
         }
 
-        
         try {
             int numeroMesa = Integer.parseInt(input);
             if (mesas.containsKey(numeroMesa)) {
                 menuMesaEspecifica(mesas.get(numeroMesa));
                 return;
             }
-        } catch (NumberFormatException e) {
-            
-        }
+        } catch (NumberFormatException e) {}
 
         System.out.println("Opción no válida.");
         menuGestionMesas();
@@ -83,7 +83,6 @@ public class GestionMesas {
 
         switch (input) {
             case "0":
-                System.out.println("Volviendo al menú de gestión de mesas...");
                 menuGestionMesas();
                 break;
             case "1":
@@ -102,7 +101,7 @@ public class GestionMesas {
                 limpiarMesaEspecifica(mesa);
                 break;
             default:
-                System.out.println("Opción no válida. Por favor, ingrese una opción entre 0 y 4.");
+                System.out.println("Opción no válida.");
                 menuMesaEspecifica(mesa);
         }
     }
@@ -132,41 +131,50 @@ public class GestionMesas {
 
     private static void procesarPedidosMesa(Mesa mesa) {
         if (mesa.estaVacia()) {
-            System.out.println("La mesa " + mesa.getNumero() + " no tiene pedidos.");
+            System.out.println("La mesa " + mesa.getNumero() + " no tiene pedidos pendientes.");
             return;
         }
 
-        System.out.print("¿Cuántos pedidos desea procesar? ");
-        int cantidad = obtenerEnteroEnRangoRecursivo(1, mesa.obtenerCantidadPedidos(),
-                "¿Cuántos pedidos desea procesar? ", scanner.nextLine().trim(), 0);
-
-        for (int i = 0; i < cantidad; i++) {
-            MenuAlimentos.PedidoMesa pedido = mesa.procesarPedido();
-            if (pedido != null) {
-                System.out.println("Pedido procesado: " + pedido);
-            }
+        MenuAlimentos.PedidoMesa pedido = mesa.procesarPedido();
+        if (pedido != null) {
+            System.out.println("Pedido procesado: " + pedido);
+            System.out.println("Pedidos pendientes: " + mesa.obtenerCantidadPedidosPendientes());
+            System.out.println("Pedidos procesados: " + mesa.obtenerCantidadPedidosProcesados());
         }
     }
 
     private static void mostrarPedidosMesa(Mesa mesa) {
+        System.out.println("\n=== PEDIDOS DE LA MESA " + mesa.getNumero() + " ===");
+
+        System.out.println("\n--- PEDIDOS PENDIENTES ---");
         if (mesa.estaVacia()) {
-            System.out.println("La mesa " + mesa.getNumero() + " no tiene pedidos.");
-            return;
+            System.out.println("No hay pedidos pendientes.");
+        } else {
+            mesa.mostrarPedidosPendientes();
         }
 
-        System.out.println("Pedidos de la mesa " + mesa.getNumero() + ":");
-        mesa.mostrarPedidos();
+        System.out.println("\n--- PEDIDOS PROCESADOS ---");
+        if (mesa.estaVaciaProcesados()) {
+            System.out.println("No hay pedidos procesados.");
+        } else {
+            mesa.mostrarPedidosProcesados();
+        }
+
+        System.out.println("\n--- RESUMEN ---");
+        System.out.println("Total pendientes: " + mesa.obtenerCantidadPedidosPendientes());
+        System.out.println("Total procesados: " + mesa.obtenerCantidadPedidosProcesados());
+        System.out.println("Total general: " + (mesa.obtenerCantidadPedidosPendientes() + mesa.obtenerCantidadPedidosProcesados()));
     }
 
     private static void limpiarMesaEspecifica(Mesa mesa) {
-        if (!mesa.estaVacia()) {
-            
+        if (!mesa.estaVacia() || !mesa.estaVaciaProcesados()) {
             MenuAlimentos.Ticket ticket = mesa.generarTicket();
             ticket.mostrarTicket();
+            guardarTicketArchivo(ticket);
 
-            
             int totalPedidos = ticket.getCantidadPedidos();
             double totalVentas = ticket.calcularTotal();
+            ventasDiarias += totalVentas;
 
             EstadisticasVentas.registrarVentasMesa(mesa.getNumero(), totalPedidos);
             AnalisisVentas.registrarVentaDiaria((int) totalVentas);
@@ -179,7 +187,54 @@ public class GestionMesas {
         menuGestionMesas();
     }
 
-    
+    private static void guardarTicketArchivo(MenuAlimentos.Ticket ticket) {
+        String fecha = LocalDate.now().toString();
+        String nombreArchivo = "Tickets (" + fecha + ").txt";
+
+        try (FileWriter fw = new FileWriter(nombreArchivo, true);
+             PrintWriter pw = new PrintWriter(fw)) {
+
+            String horario = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+            // Ticket con bordes completos
+            pw.println("╔══════════════════════════════════════════════════════╗");
+            pw.println("║                   TICKET MESA " + String.format("%-25s", ticket.getNumeroMesa()) + "║");
+            pw.println("╠══════════════════════════════════════════════════════╣");
+            pw.println("║ Fecha: " + String.format("%-47s", horario) + "║");
+            pw.println("╠══════════════════════════════════════════════════════╣");
+            pw.println("║   Cant. Producto                           Precio   ║");
+            pw.println("╠══════════════════════════════════════════════════════╣");
+
+            for (MenuAlimentos.PedidoMesa pedido : ticket.getPedidos()) {
+                String nombreProducto = pedido.producto.nombre;
+                if (nombreProducto.length() > 30) {
+                    nombreProducto = nombreProducto.substring(0, 30) + "...";
+                }
+
+                String lineaProducto = String.format("║   %-5d %-35s $%7.2f   ║",
+                        pedido.cantidad, nombreProducto, pedido.getSubtotal());
+                pw.println(lineaProducto);
+
+                if (pedido.comentarios != null && !pedido.comentarios.trim().isEmpty() && !pedido.comentarios.equals("nan")) {
+                    String comentario = pedido.comentarios;
+                    if (comentario.length() > 42) {
+                        comentario = comentario.substring(0, 42) + "...";
+                    }
+                    pw.println("║        Comentarios: " + String.format("%-37s", comentario) + "║");
+                }
+                pw.println("║                                                    ║");
+            }
+
+            pw.println("╠══════════════════════════════════════════════════════╣");
+            pw.printf ("║        TOTAL:                             $%10.2f   ║%n", ticket.calcularTotal());
+            pw.println("╚══════════════════════════════════════════════════════╝");
+            pw.println(); // Línea en blanco entre tickets
+
+        } catch (IOException e) {
+            System.out.println("Error al guardar ticket: " + e.getMessage());
+        }
+    }
+
     private static String obtenerEntradaNoVaciaRecursivo(String mensaje, String input) {
         if (input.isEmpty()) {
             System.out.print("Este campo no puede estar vacío. " + mensaje);
@@ -194,7 +249,7 @@ public class GestionMesas {
         boolean esNumero = verificarEsNumero(input, 0, true);
 
         if (!esNumero) {
-            System.out.print("Entrada no válida. Por favor, ingrese un número. " + mensaje);
+            System.out.print("Entrada no válida. " + mensaje);
             return obtenerEnteroEnRangoRecursivo(min, max, mensaje, scanner.nextLine().trim(), intentos + 1);
         }
 
@@ -214,7 +269,7 @@ public class GestionMesas {
         boolean esNumero = verificarEsNumero(input, 0, true);
 
         if (!esNumero) {
-            System.out.print("Entrada no válida. Por favor, ingrese un número. " + mensaje);
+            System.out.print("Entrada no válida. " + mensaje);
             return obtenerEnteroPositivoRecursivo(mensaje, scanner.nextLine().trim(), intentos + 1);
         }
 
@@ -254,11 +309,13 @@ public class GestionMesas {
 
     static class Mesa {
         private int numero;
-        private Queue<MenuAlimentos.PedidoMesa> pedidos;
+        private Queue<MenuAlimentos.PedidoMesa> pedidosPendientes;
+        private Queue<MenuAlimentos.PedidoMesa> pedidosProcesados;
 
         public Mesa(int numero) {
             this.numero = numero;
-            this.pedidos = new java.util.LinkedList<>();
+            this.pedidosPendientes = new java.util.LinkedList<>();
+            this.pedidosProcesados = new java.util.LinkedList<>();
         }
 
         public int getNumero() {
@@ -266,33 +323,59 @@ public class GestionMesas {
         }
 
         public void agregarPedido(MenuAlimentos.PedidoMesa pedido) {
-            pedidos.add(pedido);
+            pedidosPendientes.add(pedido);
         }
 
         public MenuAlimentos.PedidoMesa procesarPedido() {
-            return pedidos.poll();
+            if (pedidosPendientes.isEmpty()) {
+                return null;
+            }
+            MenuAlimentos.PedidoMesa pedido = pedidosPendientes.poll();
+            pedidosProcesados.add(pedido);
+            return pedido;
         }
 
         public boolean estaVacia() {
-            return pedidos.isEmpty();
+            return pedidosPendientes.isEmpty();
         }
 
-        public int obtenerCantidadPedidos() {
-            return pedidos.size();
+        public boolean estaVaciaProcesados() {
+            return pedidosProcesados.isEmpty();
         }
 
-        public void mostrarPedidos() {
+        public int obtenerCantidadPedidosPendientes() {
+            return pedidosPendientes.size();
+        }
+
+        public int obtenerCantidadPedidosProcesados() {
+            return pedidosProcesados.size();
+        }
+
+        public void mostrarPedidosPendientes() {
             int index = 1;
-            for (MenuAlimentos.PedidoMesa pedido : pedidos) {
-                System.out.println(index++ + ". " + pedido);
+            for (MenuAlimentos.PedidoMesa pedido : pedidosPendientes) {
+                System.out.println(index++ + ". [PENDIENTE] " + pedido);
+            }
+        }
+
+        public void mostrarPedidosProcesados() {
+            int index = 1;
+            for (MenuAlimentos.PedidoMesa pedido : pedidosProcesados) {
+                System.out.println(index++ + ". [PROCESADO] " + pedido);
             }
         }
 
         public MenuAlimentos.Ticket generarTicket() {
             MenuAlimentos.Ticket ticket = new MenuAlimentos.Ticket(numero);
-            for (MenuAlimentos.PedidoMesa pedido : pedidos) {
+
+            for (MenuAlimentos.PedidoMesa pedido : pedidosPendientes) {
                 ticket.agregarPedido(pedido);
             }
+
+            for (MenuAlimentos.PedidoMesa pedido : pedidosProcesados) {
+                ticket.agregarPedido(pedido);
+            }
+
             return ticket;
         }
     }

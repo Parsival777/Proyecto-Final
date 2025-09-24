@@ -9,52 +9,42 @@ import java.util.Queue;
 public class MenuAlimentos {
     private static ProductoMenu[] menu;
     private static final String[] RUTAS_CSV_MENU = {
-        "D:\\Estructura de datos\\ProyectoFinal\\data\\MENU DE CAFETERIA .csv",
-        "data/MENU DE CAFETERIA.csv",
-        "../data/MENU DE CAFETERIA.csv",
-        "./data/MENU DE CAFETERIA.csv",
-        "MENU DE CAFETERIA.csv"
+            "C:\\Users\\Usuario\\Downloads\\menu de cafeteria 1.0.csv",
     };
 
-    // Método para cargar el menú desde CSV
     public static void cargarMenuDesdeCSV() {
         File archivo = encontrarArchivo(RUTAS_CSV_MENU, "menú");
         if (archivo == null) {
-            System.out.println("❌ No se pudo cargar el menú. El archivo CSV no fue encontrado.");
-            menu = new ProductoMenu[0]; // Array vacío en lugar de menú predeterminado
+            menu = new ProductoMenu[0];
             return;
         }
-        
+
         try {
             BufferedReader br = new BufferedReader(new FileReader(archivo));
             String linea;
             int contadorLineas = 0;
-            
-            // Contar líneas válidas
+
             while ((linea = br.readLine()) != null) {
                 if (!linea.trim().isEmpty() && !linea.startsWith("ID") && !linea.startsWith(",,")) {
                     contadorLineas++;
                 }
             }
             br.close();
-            
+
             if (contadorLineas == 0) {
-                System.out.println("❌ El archivo CSV está vacío o no contiene datos válidos.");
                 menu = new ProductoMenu[0];
                 return;
             }
-            
-            // Crear array del tamaño correcto
+
             menu = new ProductoMenu[contadorLineas];
-            
-            // Leer datos
+
             br = new BufferedReader(new FileReader(archivo));
             int index = 0;
-            br.readLine(); // Saltar encabezado
-            
+            br.readLine();
+
             while ((linea = br.readLine()) != null) {
                 if (linea.trim().isEmpty() || linea.startsWith(",,")) continue;
-                
+
                 String[] datos = linea.split(",");
                 if (datos.length >= 3) {
                     try {
@@ -62,48 +52,36 @@ public class MenuAlimentos {
                         String nombre = datos[1].trim();
                         double precio = Double.parseDouble(datos[2].trim());
                         String categoria = determinarCategoria(id);
-                        
+
                         menu[index++] = new ProductoMenu(id, nombre, categoria, precio);
                     } catch (NumberFormatException e) {
-                        System.out.println("❌ Error en formato de datos en línea: " + linea);
+                        System.out.println("Error en línea: " + linea);
                     }
                 }
             }
             br.close();
-            System.out.println("✓ Menú cargado correctamente: " + menu.length + " productos");
-            
+
         } catch (IOException e) {
-            System.out.println("❌ Error al cargar el menú desde CSV: " + e.getMessage());
-            menu = new ProductoMenu[0]; // Array vacío en lugar de menú predeterminado
+            menu = new ProductoMenu[0];
         }
     }
-    
+
     private static File encontrarArchivo(String[] rutas, String tipo) {
-        System.out.println("Buscando archivo de " + tipo + "...");
-        
         for (String ruta : rutas) {
             File archivo = new File(ruta);
-            System.out.println("Probando ruta: " + archivo.getAbsolutePath());
-            
             if (archivo.exists() && archivo.isFile()) {
-                System.out.println("✓ Archivo de " + tipo + " encontrado: " + archivo.getAbsolutePath());
                 return archivo;
             }
-            
-            // Intentar con ruta absoluta desde el directorio de trabajo actual
+
             File archivoAbsoluto = new File(System.getProperty("user.dir"), ruta);
-            System.out.println("Probando ruta absoluta: " + archivoAbsoluto.getAbsolutePath());
-            
             if (archivoAbsoluto.exists() && archivoAbsoluto.isFile()) {
-                System.out.println("✓ Archivo de " + tipo + " encontrado: " + archivoAbsoluto.getAbsolutePath());
                 return archivoAbsoluto;
             }
         }
-        
-        System.out.println("✗ No se encontró el archivo CSV de " + tipo + " en las rutas esperadas");
+
         return null;
     }
-    
+
     private static String determinarCategoria(int id) {
         if (id >= 101 && id <= 130) return "Paninis y Antipasti";
         if (id >= 201 && id <= 225) return "Bebidas Frías";
@@ -111,17 +89,17 @@ public class MenuAlimentos {
         if (id >= 401 && id <= 420) return "Postres";
         return "General";
     }
-    
+
     public static void mostrarMenu() {
         if (menu == null) {
             cargarMenuDesdeCSV();
         }
-        
+
         if (menu.length == 0) {
-            System.out.println("❌ No hay productos disponibles en el menú.");
+            System.out.println("No hay productos disponibles.");
             return;
         }
-        
+
         System.out.println("\n=== MENÚ DE CAFETERÍA ===");
         for (int i = 0; i < menu.length; i++) {
             System.out.println((i + 1) + ". " + menu[i]);
@@ -132,16 +110,14 @@ public class MenuAlimentos {
         if (menu == null) {
             cargarMenuDesdeCSV();
         }
-        
+
         if (menu.length == 0) {
-            System.out.println("❌ No hay productos disponibles en el menú.");
             return null;
         }
-        
+
         if (opcion >= 1 && opcion <= menu.length) {
             return menu[opcion - 1];
         }
-        System.out.println("❌ Opción inválida. Por favor seleccione un número entre 1 y " + menu.length);
         return null;
     }
 
@@ -152,16 +128,15 @@ public class MenuAlimentos {
         return menu.length;
     }
 
-    // Método para buscar producto por ID (para integración con otras clases)
     public static ProductoMenu buscarProductoPorID(int id) {
         if (menu == null) {
             cargarMenuDesdeCSV();
         }
-        
+
         if (menu.length == 0) {
             return null;
         }
-        
+
         for (ProductoMenu producto : menu) {
             if (producto.id == id) {
                 return producto;
@@ -235,12 +210,40 @@ public class MenuAlimentos {
         }
 
         public void mostrarTicket() {
-            System.out.println("\n=== TICKET MESA " + numeroMesa + " ===");
-            int index = 1;
+            String horario = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+            // Ticket con bordes completos
+            System.out.println("╔══════════════════════════════════════════════════════╗");
+            System.out.println("║                   TICKET MESA " + String.format("%-25s", numeroMesa) + "║");
+            System.out.println("╠══════════════════════════════════════════════════════╣");
+            System.out.println("║ Fecha: " + String.format("%-47s", horario) + "║");
+            System.out.println("╠══════════════════════════════════════════════════════╣");
+            System.out.println("║   Cant. Producto                           Precio   ║");
+            System.out.println("╠══════════════════════════════════════════════════════╣");
+
             for (PedidoMesa pedido : pedidos) {
-                System.out.println(index++ + ". " + pedido);
+                String nombreProducto = pedido.producto.nombre;
+                if (nombreProducto.length() > 30) {
+                    nombreProducto = nombreProducto.substring(0, 30) + "...";
+                }
+
+                String lineaProducto = String.format("║   %-5d %-35s $%7.2f   ║",
+                        pedido.cantidad, nombreProducto, pedido.getSubtotal());
+                System.out.println(lineaProducto);
+
+                if (pedido.comentarios != null && !pedido.comentarios.trim().isEmpty() && !pedido.comentarios.equals("nan")) {
+                    String comentario = pedido.comentarios;
+                    if (comentario.length() > 42) {
+                        comentario = comentario.substring(0, 42) + "...";
+                    }
+                    System.out.println("║        Comentarios: " + String.format("%-37s", comentario) + "║");
+                }
+                System.out.println("║                                                    ║");
             }
-            System.out.printf("TOTAL: $%.2f MXN\n", calcularTotal());
+
+            System.out.println("╠══════════════════════════════════════════════════════╣");
+            System.out.printf ("║        TOTAL:                             $%10.2f   ║%n", calcularTotal());
+            System.out.println("╚══════════════════════════════════════════════════════╝");
         }
 
         public int getCantidadPedidos() {
@@ -250,5 +253,14 @@ public class MenuAlimentos {
             }
             return total;
         }
+
+        public int getNumeroMesa() {
+            return numeroMesa;
+        }
+
+        public Queue<PedidoMesa> getPedidos() {
+            return pedidos;
+        }
     }
 }
+

@@ -7,14 +7,12 @@ public class GestionInventario {
     private static final int TAMANO_TABLA = 50;
     private static Ingrediente[] tabla = new Ingrediente[TAMANO_TABLA];
     private static Scanner scanner = new Scanner(System.in);
-    private static final String[] RUTAS_CSV_INVENTARIO = {
-        "D:\\Estructura de datos\\ProyectoFinal\\data\\INVENTARIO CAFETERERIA .csv",
-        
-        "data/INVENTARIO CAFETERIA.csv",
-        "../data/INVENTARIO CAFETERIA.csv",
-        "./data/INVENTARIO CAFETERIA.csv",
-        "INVENTARIO CAFETERIA.csv"
-    };
+    private static final String RUTA_CSV_INVENTARIO = "C:\\Users\\Marcelo Silva\\Desktop\\PROYECTO FINAL ESTRUC\\ESTRUCTURA FINAL\\src\\Invetario de cafeteria 1.csv";
+
+    // Cargar inventario automáticamente al iniciar la clase
+    static {
+        cargarInventarioDesdeCSV();
+    }
 
     public static void menuGestionInventario() {
         System.out.println("\n=== GESTIÓN DE INVENTARIO ===");
@@ -22,8 +20,7 @@ public class GestionInventario {
         System.out.println("2. Eliminar ingrediente del inventario");
         System.out.println("3. Buscar ingrediente");
         System.out.println("4. Mostrar todo el inventario");
-        System.out.println("5. Cargar inventario desde CSV");
-        System.out.println("6. Guardar inventario a CSV");
+        System.out.println("5. Guardar inventario a CSV");
         System.out.println("0. Volver al menú principal");
         System.out.print("Seleccione una opción: ");
 
@@ -41,8 +38,7 @@ public class GestionInventario {
         procesarOpcion(input, "2", GestionInventario::eliminarIngrediente);
         procesarOpcion(input, "3", GestionInventario::buscarIngrediente);
         procesarOpcion(input, "4", GestionInventario::mostrarInventario);
-        procesarOpcion(input, "5", GestionInventario::cargarInventarioDesdeCSV);
-        procesarOpcion(input, "6", GestionInventario::guardarInventarioACSV);
+        procesarOpcion(input, "5", GestionInventario::guardarInventarioACSV);
 
         procesarCasoDefault(input);
     }
@@ -61,10 +57,10 @@ public class GestionInventario {
     }
 
     private static void procesarCasoDefault(String input) {
-        boolean esValida = verificarOpcionValida(input, new String[]{"0", "1", "2", "3", "4", "5", "6"}, 0);
+        boolean esValida = verificarOpcionValida(input, new String[]{"0", "1", "2", "3", "4", "5"}, 0);
 
         if (!esValida) {
-            System.out.println("Opción no válida. Por favor, ingrese una opción entre 0 y 6.");
+            System.out.println("Opción no válida. Por favor, ingrese una opción entre 0 y 5.");
             menuGestionInventario();
         }
     }
@@ -75,29 +71,30 @@ public class GestionInventario {
         return verificarOpcionValida(input, opciones, index + 1);
     }
 
-    // Método para cargar inventario desde CSV
+    // Método para cargar inventario desde CSV (automático al inicio)
     public static void cargarInventarioDesdeCSV() {
-        File archivo = encontrarArchivo(RUTAS_CSV_INVENTARIO, "inventario");
-        if (archivo == null) {
-            System.out.println("✗ No se pudo cargar el inventario");
+        File archivo = new File(RUTA_CSV_INVENTARIO);
+        
+        if (!archivo.exists()) {
+            System.out.println("✗ Archivo de inventario no encontrado: " + archivo.getAbsolutePath());
             return;
         }
-        
+
         try {
             BufferedReader br = new BufferedReader(new FileReader(archivo));
             String linea;
-            
+
             // Limpiar tabla actual
             for (int i = 0; i < TAMANO_TABLA; i++) {
                 tabla[i] = null;
             }
-            
+
             br.readLine(); // Saltar encabezado
-            
+
             int contador = 0;
             while ((linea = br.readLine()) != null) {
                 if (linea.trim().isEmpty()) continue;
-                
+
                 String[] datos = linea.split(",");
                 if (datos.length >= 4) {
                     try {
@@ -105,40 +102,31 @@ public class GestionInventario {
                         String nombre = datos[1].trim();
                         double cantidad = Double.parseDouble(datos[2].trim());
                         String unidad = datos[3].trim();
-                        
+
                         Ingrediente ingrediente = new Ingrediente(id, nombre, cantidad, unidad);
                         int indice = funcionHash(id);
-                        
+
                         insertarIngrediente(indice, ingrediente, 0);
                         contador++;
-                        
+
                     } catch (NumberFormatException e) {
                         System.out.println("Error en línea: " + linea);
                     }
                 }
             }
             br.close();
-            System.out.println("✓ Inventario cargado correctamente: " + contador + " ingredientes");
-            
+            System.out.println("✓ Inventario cargado automáticamente: " + contador + " ingredientes");
+
         } catch (IOException e) {
             System.out.println("Error al cargar inventario desde CSV: " + e.getMessage());
         }
     }
-    
+
     public static void guardarInventarioACSV() {
-        // Crear directorio data si no existe
-        File directorioData = new File("data");
-        if (!directorioData.exists()) {
-            if (directorioData.mkdirs()) {
-                System.out.println("✓ Directorio 'data' creado");
-            }
-        }
-        
-        String rutaGuardado = "data/INVENTARIO CAFETERIA.csv";
         try {
-            PrintWriter pw = new PrintWriter(new FileWriter(rutaGuardado));
-            pw.println("ID,Ingrediente,Cantidad en Stock,Unidad");
-            
+            PrintWriter pw = new PrintWriter(new FileWriter(RUTA_CSV_INVENTARIO));
+            pw.println("ID,Nombre del Producto,Stock,Unidad");
+
             int contador = 0;
             for (int i = 0; i < TAMANO_TABLA; i++) {
                 if (tabla[i] != null) {
@@ -148,36 +136,11 @@ public class GestionInventario {
                 }
             }
             pw.close();
-            System.out.println("✓ Inventario guardado correctamente: " + contador + " ingredientes en " + new File(rutaGuardado).getAbsolutePath());
-            
+            System.out.println("✓ Inventario guardado correctamente: " + contador + " ingredientes");
+
         } catch (IOException e) {
             System.out.println("Error al guardar inventario: " + e.getMessage());
         }
-    }
-    
-    private static File encontrarArchivo(String[] rutas, String tipo) {
-        System.out.println("Buscando archivo de " + tipo + "...");
-        
-        for (String ruta : rutas) {
-            File archivo = new File(ruta);
-            System.out.println("Probando ruta: " + archivo.getAbsolutePath());
-            
-            if (archivo.exists() && archivo.isFile()) {
-                System.out.println("✓ Archivo de " + tipo + " encontrado: " + archivo.getAbsolutePath());
-                return archivo;
-            }
-            
-            File archivoAbsoluto = new File(System.getProperty("user.dir"), ruta);
-            System.out.println("Probando ruta absoluta: " + archivoAbsoluto.getAbsolutePath());
-            
-            if (archivoAbsoluto.exists() && archivoAbsoluto.isFile()) {
-                System.out.println("✓ Archivo de " + tipo + " encontrado: " + archivoAbsoluto.getAbsolutePath());
-                return archivoAbsoluto;
-            }
-        }
-        
-        System.out.println("✗ No se encontró el archivo CSV de " + tipo);
-        return null;
     }
 
     private static void insertarIngrediente(int indice, Ingrediente ingrediente, int intento) {
@@ -289,32 +252,52 @@ public class GestionInventario {
     }
 
     private static void mostrarInventario() {
-        System.out.println("Contenido del inventario:");
-        mostrarRecursivo(0);
+        int totalIngredientes = contarIngredientes(0, 0);
+        
+        if (totalIngredientes == 0) {
+            System.out.println("El inventario está vacío.");
+            return;
+        }
+
+        System.out.println("\n=== INVENTARIO COMPLETO ===");
+        System.out.println("Total de ingredientes: " + totalIngredientes);
+        System.out.println("---------------------------");
+        
+        mostrarSoloIngredientes(0);
     }
 
-    private static void mostrarRecursivo(int indice) {
+    private static int contarIngredientes(int indice, int contador) {
+        if (indice >= TAMANO_TABLA) {
+            return contador;
+        }
+        
+        if (tabla[indice] != null) {
+            return contarIngredientes(indice + 1, contador + 1);
+        }
+        
+        return contarIngredientes(indice + 1, contador);
+    }
+
+    private static void mostrarSoloIngredientes(int indice) {
         if (indice >= TAMANO_TABLA) {
             return;
         }
 
-        mostrarPosicionRecursiva(indice);
-        mostrarRecursivo(indice + 1);
-    }
-
-    private static void mostrarPosicionRecursiva(int indice) {
         if (tabla[indice] != null) {
-            System.out.println("Posición " + indice + ": " + tabla[indice]);
-            return;
+            System.out.println("ID: " + tabla[indice].id + " | " + 
+                             tabla[indice].nombre + " | " + 
+                             tabla[indice].cantidad + " " + 
+                             tabla[indice].unidad);
         }
 
-        System.out.println("Posición " + indice + ": Vacía");
+        mostrarSoloIngredientes(indice + 1);
     }
 
     private static int funcionHash(int id) {
         return id % TAMANO_TABLA;
     }
 
+    // Los métodos restantes se mantienen igual...
     private static String obtenerEntradaNoVaciaRecursivo(String mensaje, String input) {
         if (input.isEmpty()) {
             System.out.print("Este campo no puede estar vacío. " + mensaje);
@@ -445,12 +428,10 @@ public class GestionInventario {
 
         @Override
         public String toString() {
-            return String.format("Ingrediente{id=%d, nombre='%s', cantidad=%.1f %s}", 
-                               id, nombre, cantidad, unidad);
+            return String.format("ID: %d | %s | %.1f %s", id, nombre, cantidad, unidad);
         }
     }
 
-    // Método para obtener un ingrediente por ID (útil para otras clases)
     public static Ingrediente obtenerIngredientePorID(int id) {
         int indice = buscarIndiceRecursivo(id, funcionHash(id), 0);
         if (indice != -1) {
@@ -459,7 +440,6 @@ public class GestionInventario {
         return null;
     }
 
-    // Método para actualizar la cantidad de un ingrediente
     public static void actualizarCantidadIngrediente(int id, double nuevaCantidad) {
         int indice = buscarIndiceRecursivo(id, funcionHash(id), 0);
         if (indice != -1) {
@@ -470,7 +450,6 @@ public class GestionInventario {
         }
     }
 
-    // Método para verificar si hay suficiente stock
     public static boolean verificarStock(int id, double cantidadRequerida) {
         Ingrediente ingrediente = obtenerIngredientePorID(id);
         if (ingrediente != null) {
