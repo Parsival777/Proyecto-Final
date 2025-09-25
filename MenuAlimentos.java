@@ -45,7 +45,7 @@ public class MenuAlimentos {
 
             br = new BufferedReader(new FileReader(archivo));
             int index = 0;
-            br.readLine(); // Saltar encabezado
+            br.readLine(); 
 
             while ((linea = br.readLine()) != null) {
                 if (linea.trim().isEmpty() || linea.startsWith(",,"))
@@ -75,14 +75,14 @@ public class MenuAlimentos {
     }
 
     private static File encontrarArchivo(String[] rutas, String tipo) {
-        // Buscar en múltiples ubicaciones posibles
+        
         String[] ubicaciones = {
-                "", // Directorio actual
-                System.getProperty("user.dir"), // Directorio de trabajo
-                new File(System.getProperty("user.dir")).getParent(), // Directorio padre
-                System.getProperty("user.dir") + "/src", // Subdirectorio src
-                System.getProperty("user.dir") + "/data", // Subdirectorio data
-                System.getProperty("user.dir") + "/src/data" // src/data
+                "", 
+                System.getProperty("user.dir"), 
+                new File(System.getProperty("user.dir")).getParent(), 
+                System.getProperty("user.dir") + "/src", 
+                System.getProperty("user.dir") + "/data", 
+                System.getProperty("user.dir") + "/src/data" 
         };
 
         for (String ubicacion : ubicaciones) {
@@ -102,7 +102,7 @@ public class MenuAlimentos {
                         return archivo;
                     }
                 } catch (Exception e) {
-                    // Continuar con la siguiente ruta
+                    
                 }
             }
         }
@@ -125,8 +125,8 @@ public class MenuAlimentos {
         if (id >= 401 && id <= 420)
             return "Postres";
 
-        // Para los IDs del 1-25 que tienes en tu ejemplo, asignar categorías
-        // específicas
+        
+        
         if (id >= 1 && id <= 12) {
             if (id <= 6)
                 return "Bebidas Calientes";
@@ -156,16 +156,16 @@ public class MenuAlimentos {
                 "║                               MENÚ DE CAFETERÍA POWER CAFE                     ║");
         System.out.println("╠════════════════════════════════════════════════════════════════════════════════╣");
 
-        // Agrupar productos por categoría
+        
         Map<String, List<ProductoMenu>> productosPorCategoria = new LinkedHashMap<>();
 
-        // Inicializar categorías en el orden deseado
+        
         String[] categorias = { "Bebidas Calientes", "Bebidas Frías", "Paninis y Antipasti", "Postres", "General" };
         for (String categoria : categorias) {
             productosPorCategoria.put(categoria, new ArrayList<>());
         }
 
-        // Agrupar productos
+        
         for (ProductoMenu producto : menu) {
             if (productosPorCategoria.containsKey(producto.categoria)) {
                 productosPorCategoria.get(producto.categoria).add(producto);
@@ -174,14 +174,14 @@ public class MenuAlimentos {
             }
         }
 
-        // Mostrar productos por categoría
+        
         boolean primeraCategoria = true;
         for (Map.Entry<String, List<ProductoMenu>> entry : productosPorCategoria.entrySet()) {
             String categoria = entry.getKey();
             List<ProductoMenu> productos = entry.getValue();
 
             if (!productos.isEmpty()) {
-                // Encabezado de categoría
+                
                 if (!primeraCategoria) {
                     System.out.println(
                             "╠════════════════════════════════════════════════════════════════════════════════╣");
@@ -194,10 +194,10 @@ public class MenuAlimentos {
                 System.out
                         .println("╠════════╬═══════════════════════════════════════════════════════╬═══════════════╣");
 
-                // Productos de la categoría
+                
                 for (ProductoMenu producto : productos) {
                     String nombreProducto = producto.nombre;
-                    // Limitar la longitud del nombre para que quepa en la tabla
+                    
                     if (nombreProducto.length() > 40) {
                         nombreProducto = nombreProducto.substring(0, 37) + "...";
                     }
