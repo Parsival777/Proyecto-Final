@@ -29,31 +29,90 @@ public class GestionEmpleados {
     private static TareaEmpleado[] tareas = new TareaEmpleado[100];
     private static int contadorTareas = 0;
 
-    public static void menuGestionEmpleados() {
-        System.out.println("\n=== GESTIÓN DE EMPLEADOS Y TAREAS ===");
-        System.out.println("1. Gestión de empleados (Árbol binario)");
-        System.out.println("2. Gestión de tareas (Recursividad)");
-        System.out.println("3. Distribución de tareas (Divide y Vencerás)");
-        System.out.println("0. Volver al menú principal");
-        System.out.print("Seleccione una opción: ");
-
-        String input = scanner.nextLine().trim();
-        switch (input) {
-            case "0":
-                return;
-            case "1":
-                menuEmpleados();
-                break;
-            case "2":
-                menuTareas();
-                break;
-            case "3":
-                distribuirTareasDivideVenceras();
-                break;
-            default:
-                System.out.println("Opción no válida.");
+    // Métodos de validación robustos
+    private static int obtenerEnteroValido(String mensaje) {
+        while (true) {
+            try {
+                System.out.print(mensaje);
+                String input = scanner.nextLine().trim();
+                return Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                System.out.println("Error: Por favor ingrese un número entero válido.");
+            }
         }
-        menuGestionEmpleados();
+    }
+
+    private static int obtenerEnteroEnRango(String mensaje, int min, int max) {
+        while (true) {
+            int valor = obtenerEnteroValido(mensaje);
+            if (valor >= min && valor <= max) {
+                return valor;
+            } else {
+                System.out.printf("Error: El valor debe estar entre %d y %d.\n", min, max);
+            }
+        }
+    }
+
+    private static double obtenerDoubleValido(String mensaje) {
+        while (true) {
+            try {
+                System.out.print(mensaje);
+                String input = scanner.nextLine().trim();
+                return Double.parseDouble(input);
+            } catch (NumberFormatException e) {
+                System.out.println("Error: Por favor ingrese un número válido.");
+            }
+        }
+    }
+
+    private static double obtenerDoublePositivo(String mensaje) {
+        while (true) {
+            double valor = obtenerDoubleValido(mensaje);
+            if (valor > 0) {
+                return valor;
+            } else {
+                System.out.println("Error: El valor debe ser positivo.");
+            }
+        }
+    }
+
+    private static String obtenerStringNoVacio(String mensaje) {
+        while (true) {
+            System.out.print(mensaje);
+            String input = scanner.nextLine().trim();
+            if (!input.isEmpty()) {
+                return input;
+            } else {
+                System.out.println("Error: Este campo no puede estar vacío.");
+            }
+        }
+    }
+
+    public static void menuGestionEmpleados() {
+        int opcion;
+        do {
+            System.out.println("\n=== GESTIÓN DE EMPLEADOS Y TAREAS ===");
+            System.out.println("1. Gestión de empleados (Árbol binario)");
+            System.out.println("2. Gestión de tareas (Recursividad)");
+            System.out.println("3. Distribución de tareas (Divide y Vencerás)");
+            System.out.println("0. Volver al menú principal");
+            
+            opcion = obtenerEnteroEnRango("Seleccione una opción: ", 0, 3);
+
+            switch (opcion) {
+                case 0:
+                    return;
+                case 1:
+                    menuEmpleados();
+                    break;
+                case 2:
+                    menuTareas();
+                    break;
+                case 3:
+                    distribuirTareasDivideVenceras();
+                    break;
+            }
+        } while (opcion != 0);
     }
 
     private static void menuEmpleados() {
@@ -66,11 +125,13 @@ public class GestionEmpleados {
             System.out.println("4. Buscar empleado");
             System.out.println("5. Calcular nómina total recursiva");
             System.out.println("0. Volver");
-            System.out.print("Seleccione una opción: ");
-
-            opcion = Integer.parseInt(scanner.nextLine().trim());
+            
+            opcion = obtenerEnteroEnRango("Seleccione una opción: ", 0, 5);
 
             switch (opcion) {
+                case 0:
+                    System.out.println("Volviendo...");
+                    break;
                 case 1:
                     agregarEmpleado();
                     break;
@@ -86,13 +147,80 @@ public class GestionEmpleados {
                 case 5:
                     calcularNominaTotal();
                     break;
-                case 0:
-                    System.out.println("Volviendo...");
-                    break;
-                default:
-                    System.out.println("Opción no válida.");
             }
         } while (opcion != 0);
+    }
+
+    private static void agregarEmpleado() {
+        int id = obtenerEnteroValido("ID del empleado: ");
+        String nombre = obtenerStringNoVacio("Nombre del empleado: ");
+        String departamento = obtenerStringNoVacio("Departamento: ");
+        double salario = obtenerDoublePositivo("Salario mensual: ");
+
+        Empleado nuevoEmpleado = new Empleado(id, nombre, departamento, salario);
+        raiz = insertarRecursivo(raiz, nuevoEmpleado);
+        System.out.println("✓ Empleado agregado correctamente.");
+    }
+
+    private static void eliminarEmpleado() {
+        int id = obtenerEnteroValido("ID del empleado a eliminar: ");
+        raiz = eliminarRecursivo(raiz, id);
+        System.out.println("Empleado eliminado si existía.");
+    }
+
+    private static void mostrarEmpleadosInorden() {
+        if (raiz == null) {
+            System.out.println("No hay empleados registrados.");
+            return;
+        }
+
+        System.out.println("Empleados (ordenados por ID):");
+        inordenRecursivo(raiz);
+    }
+
+    private static void inordenRecursivo(NodoArbolEmpleados nodo) {
+        if (nodo != null) {
+            inordenRecursivo(nodo.izquierdo);
+            System.out.println(nodo.empleado);
+            inordenRecursivo(nodo.derecho);
+        }
+    }
+
+    private static void buscarEmpleado() {
+        int id = obtenerEnteroValido("ID del empleado a buscar: ");
+
+        Empleado resultado = buscarRecursivo(raiz, id);
+        if (resultado != null) {
+            System.out.println("✓ Empleado encontrado: " + resultado);
+        } else {
+            System.out.println("Empleado no encontrado.");
+        }
+    }
+
+    private static Empleado buscarRecursivo(NodoArbolEmpleados nodo, int id) {
+        if (nodo == null) return null;
+
+        if (id == nodo.empleado.id) return nodo.empleado;
+        if (id < nodo.empleado.id) return buscarRecursivo(nodo.izquierdo, id);
+        return buscarRecursivo(nodo.derecho, id);
+    }
+
+    private static void calcularNominaTotal() {
+        if (raiz == null) {
+            System.out.println("No hay empleados registrados.");
+            return;
+        }
+
+        double total = calcularNominaRecursivo(raiz, 0.0);
+        System.out.println("Nómina total mensual: $" + String.format("%.2f", total));
+    }
+
+    private static double calcularNominaRecursivo(NodoArbolEmpleados nodo, double acumulado) {
+        if (nodo == null) return acumulado;
+
+        double conIzquierdo = calcularNominaRecursivo(nodo.izquierdo, acumulado);
+        double conActual = conIzquierdo + nodo.empleado.salario;
+        return calcularNominaRecursivo(nodo.derecho, conActual);
     }
 
     private static void menuTareas() {
@@ -104,11 +232,13 @@ public class GestionEmpleados {
             System.out.println("3. Calcular tiempo total de tareas");
             System.out.println("4. Buscar tarea por empleado");
             System.out.println("0. Volver");
-            System.out.print("Seleccione una opción: ");
-
-            opcion = Integer.parseInt(scanner.nextLine().trim());
+            
+            opcion = obtenerEnteroEnRango("Seleccione una opción: ", 0, 4);
 
             switch (opcion) {
+                case 0:
+                    System.out.println("Volviendo...");
+                    break;
                 case 1:
                     agregarTarea();
                     break;
@@ -121,47 +251,15 @@ public class GestionEmpleados {
                 case 4:
                     buscarTareasPorEmpleado();
                     break;
-                case 0:
-                    System.out.println("Volviendo...");
-                    break;
-                default:
-                    System.out.println("Opción no válida.");
             }
         } while (opcion != 0);
     }
 
     private static void agregarTarea() {
-        System.out.print("Descripción de la tarea: ");
-        String descripcion = scanner.nextLine().trim();
-
-        if (descripcion.isEmpty()) {
-            System.out.println("La descripción no puede estar vacía.");
-            return;
-        }
-
-        System.out.print("Prioridad (1-5, donde 1 es más alta): ");
-        int prioridad = Integer.parseInt(scanner.nextLine().trim());
-
-        if (prioridad < 1 || prioridad > 5) {
-            System.out.println("La prioridad debe estar entre 1 y 5.");
-            return;
-        }
-
-        System.out.print("Duración estimada (minutos): ");
-        int duracion = Integer.parseInt(scanner.nextLine().trim());
-
-        if (duracion <= 0) {
-            System.out.println("La duración debe ser positiva.");
-            return;
-        }
-
-        System.out.print("Empleado asignado: ");
-        String empleado = scanner.nextLine().trim();
-
-        if (empleado.isEmpty()) {
-            System.out.println("El empleado no puede estar vacío.");
-            return;
-        }
+        String descripcion = obtenerStringNoVacio("Descripción de la tarea: ");
+        int prioridad = obtenerEnteroEnRango("Prioridad (1-5, donde 1 es más alta): ", 1, 5);
+        int duracion = obtenerEnteroEnRango("Duración estimada (minutos): ", 1, 1000);
+        String empleado = obtenerStringNoVacio("Empleado asignado: ");
 
         if (contadorTareas < tareas.length) {
             tareas[contadorTareas++] = new TareaEmpleado(descripcion, prioridad, duracion, empleado);
@@ -193,8 +291,7 @@ public class GestionEmpleados {
     }
 
     private static void buscarTareasPorEmpleado() {
-        System.out.print("Nombre del empleado: ");
-        String empleado = scanner.nextLine().trim();
+        String empleado = obtenerStringNoVacio("Nombre del empleado: ");
 
         System.out.println("Tareas asignadas a " + empleado + ":");
         int encontradas = buscarTareasRecursivo(empleado, 0, 0);
@@ -263,24 +360,6 @@ public class GestionEmpleados {
 
     // ========== MÉTODOS ORIGINALES DE GESTIÓN DE EMPLEADOS ==========
 
-    private static void agregarEmpleado() {
-        System.out.print("ID del empleado: ");
-        int id = Integer.parseInt(scanner.nextLine().trim());
-
-        System.out.print("Nombre del empleado: ");
-        String nombre = scanner.nextLine().trim();
-
-        System.out.print("Departamento: ");
-        String departamento = scanner.nextLine().trim();
-
-        System.out.print("Salario mensual: ");
-        double salario = Double.parseDouble(scanner.nextLine().trim());
-
-        Empleado nuevoEmpleado = new Empleado(id, nombre, departamento, salario);
-        raiz = insertarRecursivo(raiz, nuevoEmpleado);
-        System.out.println("✓ Empleado agregado correctamente.");
-    }
-
     private static NodoArbolEmpleados insertarRecursivo(NodoArbolEmpleados nodo, Empleado empleado) {
         if (nodo == null) {
             return new NodoArbolEmpleados(empleado);
@@ -293,14 +372,6 @@ public class GestionEmpleados {
         }
 
         return nodo;
-    }
-
-    private static void eliminarEmpleado() {
-        System.out.print("ID del empleado a eliminar: ");
-        int id = Integer.parseInt(scanner.nextLine().trim());
-
-        raiz = eliminarRecursivo(raiz, id);
-        System.out.println("Empleado eliminado si existía.");
     }
 
     private static NodoArbolEmpleados eliminarRecursivo(NodoArbolEmpleados nodo, int id) {
@@ -324,62 +395,6 @@ public class GestionEmpleados {
     private static Empleado encontrarMinimo(NodoArbolEmpleados nodo) {
         if (nodo.izquierdo == null) return nodo.empleado;
         return encontrarMinimo(nodo.izquierdo);
-    }
-
-    private static void mostrarEmpleadosInorden() {
-        if (raiz == null) {
-            System.out.println("No hay empleados registrados.");
-            return;
-        }
-
-        System.out.println("Empleados (ordenados por ID):");
-        inordenRecursivo(raiz);
-    }
-
-    private static void inordenRecursivo(NodoArbolEmpleados nodo) {
-        if (nodo != null) {
-            inordenRecursivo(nodo.izquierdo);
-            System.out.println(nodo.empleado);
-            inordenRecursivo(nodo.derecho);
-        }
-    }
-
-    private static void buscarEmpleado() {
-        System.out.print("ID del empleado a buscar: ");
-        int id = Integer.parseInt(scanner.nextLine().trim());
-
-        Empleado resultado = buscarRecursivo(raiz, id);
-        if (resultado != null) {
-            System.out.println("✓ Empleado encontrado: " + resultado);
-        } else {
-            System.out.println("Empleado no encontrado.");
-        }
-    }
-
-    private static Empleado buscarRecursivo(NodoArbolEmpleados nodo, int id) {
-        if (nodo == null) return null;
-
-        if (id == nodo.empleado.id) return nodo.empleado;
-        if (id < nodo.empleado.id) return buscarRecursivo(nodo.izquierdo, id);
-        return buscarRecursivo(nodo.derecho, id);
-    }
-
-    private static void calcularNominaTotal() {
-        if (raiz == null) {
-            System.out.println("No hay empleados registrados.");
-            return;
-        }
-
-        double total = calcularNominaRecursivo(raiz, 0.0);
-        System.out.println("Nómina total mensual: $" + String.format("%.2f", total));
-    }
-
-    private static double calcularNominaRecursivo(NodoArbolEmpleados nodo, double acumulado) {
-        if (nodo == null) return acumulado;
-
-        double conIzquierdo = calcularNominaRecursivo(nodo.izquierdo, acumulado);
-        double conActual = conIzquierdo + nodo.empleado.salario;
-        return calcularNominaRecursivo(nodo.derecho, conActual);
     }
 
     static class NodoArbolEmpleados {
