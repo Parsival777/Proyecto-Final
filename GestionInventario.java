@@ -6,9 +6,9 @@ public class GestionInventario {
     private static Ingrediente[] tabla = new Ingrediente[TAMANO_TABLA];
     private static Scanner scanner = new Scanner(System.in);
     private static final String[] RUTAS_CSV_INVENTARIO = {
-            "data/Invetario de cafeteria 1.csv",
-            "src/data/Invetario de cafeteria 1.csv",
-            "Invetario de cafeteria 1.csv"
+        "data/Invetario de cafeteria 1.csv",
+        "src/data/Invetario de cafeteria 1.csv",
+        "Invetario de cafeteria 1.csv"
     };
 
     // Cargar inventario automáticamente al iniciar la clase
@@ -16,61 +16,126 @@ public class GestionInventario {
         cargarInventarioDesdeCSV();
     }
 
+    // Métodos de validación robustos
+    private static int obtenerEnteroValido(String mensaje) {
+        while (true) {
+            try {
+                System.out.print(mensaje);
+                String input = scanner.nextLine().trim();
+                return Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                System.out.println("Error: Por favor ingrese un número entero válido.");
+            }
+        }
+    }
+
+    private static int obtenerEnteroPositivo(String mensaje) {
+        while (true) {
+            int valor = obtenerEnteroValido(mensaje);
+            if (valor > 0) {
+                return valor;
+            } else {
+                System.out.println("Error: El valor debe ser positivo.");
+            }
+        }
+    }
+
+    private static int obtenerEnteroEnRango(String mensaje, int min, int max) {
+        while (true) {
+            int valor = obtenerEnteroValido(mensaje);
+            if (valor >= min && valor <= max) {
+                return valor;
+            } else {
+                System.out.printf("Error: El valor debe estar entre %d y %d.\n", min, max);
+            }
+        }
+    }
+
+    private static double obtenerDoubleValido(String mensaje) {
+        while (true) {
+            try {
+                System.out.print(mensaje);
+                String input = scanner.nextLine().trim();
+                return Double.parseDouble(input);
+            } catch (NumberFormatException e) {
+                System.out.println("Error: Por favor ingrese un número válido.");
+            }
+        }
+    }
+
+    private static double obtenerDoublePositivo(String mensaje) {
+        while (true) {
+            double valor = obtenerDoubleValido(mensaje);
+            if (valor >= 0) {
+                return valor;
+            } else {
+                System.out.println("Error: El valor no puede ser negativo.");
+            }
+        }
+    }
+
+    private static String obtenerStringNoVacio(String mensaje) {
+        while (true) {
+            System.out.print(mensaje);
+            String input = scanner.nextLine().trim();
+            if (!input.isEmpty()) {
+                return input;
+            } else {
+                System.out.println("Error: Este campo no puede estar vacío.");
+            }
+        }
+    }
+
     public static void menuGestionInventario() {
-        System.out.println("\n=== GESTIÓN DE INVENTARIO ===");
-        System.out.println("1. Agregar ingrediente al inventario");
-        System.out.println("2. Eliminar ingrediente del inventario");
-        System.out.println("3. Buscar ingrediente");
-        System.out.println("4. Mostrar todo el inventario");
-        System.out.println("5. Guardar inventario a CSV");
-        System.out.println("0. Volver al menú principal");
-        System.out.print("Seleccione una opción: ");
+        int opcion;
+        do {
+            System.out.println("\n=== GESTIÓN DE INVENTARIO ===");
+            System.out.println("1. Agregar ingrediente al inventario");
+            System.out.println("2. Eliminar ingrediente del inventario");
+            System.out.println("3. Buscar ingrediente");
+            System.out.println("4. Mostrar todo el inventario");
+            System.out.println("5. Actualizar cantidad de ingrediente");
+            System.out.println("6. Verificar stock de ingrediente");
+            System.out.println("7. Guardar inventario a CSV");
+            System.out.println("8. Cargar inventario desde CSV");
+            System.out.println("9. Estadísticas del inventario");
+            System.out.println("0. Volver al menú principal");
+            
+            opcion = obtenerEnteroEnRango("Seleccione una opción: ", 0, 9);
 
-        procesarOpcionInventario(scanner.nextLine().trim());
-    }
-
-    private static void procesarOpcionInventario(String input) {
-        procesarOpcionRecursiva(input);
-    }
-
-    private static void procesarOpcionRecursiva(String input) {
-        procesarCasoBase(input, "0", () -> System.out.println("Volviendo al menú principal..."));
-
-        procesarOpcion(input, "1", GestionInventario::agregarIngrediente);
-        procesarOpcion(input, "2", GestionInventario::eliminarIngrediente);
-        procesarOpcion(input, "3", GestionInventario::buscarIngrediente);
-        procesarOpcion(input, "4", GestionInventario::mostrarInventario);
-        procesarOpcion(input, "5", GestionInventario::guardarInventarioACSV);
-
-        procesarCasoDefault(input);
-    }
-
-    private static void procesarCasoBase(String input, String target, Runnable action) {
-        if (input.equals(target)) {
-            action.run();
-        }
-    }
-
-    private static void procesarOpcion(String input, String opcion, Runnable funcion) {
-        if (input.equals(opcion)) {
-            funcion.run();
-            menuGestionInventario();
-        }
-    }
-
-    private static void procesarCasoDefault(String input) {
-        boolean esValida = verificarOpcionValida(input, new String[]{"0", "1", "2", "3", "4", "5"}, 0);
-
-        if (!esValida) {
-            System.out.println("Opción no válida. Por favor, ingrese una opción entre 0 y 5.");
-            menuGestionInventario();
-        }
-    }
-
-    private static boolean verificarOpcionValida(String input, String[] opciones, int index) {
-        if (index >= opciones.length) return false;
-        if (input.equals(opciones[index])) return true;
-        return verificarOpcionValida(input, opciones, index + 1);
+            switch (opcion) {
+                case 0:
+                    System.out.println("Volviendo al menú principal...");
+                    break;
+                case 1:
+                    agregarIngrediente();
+                    break;
+                case 2:
+                    eliminarIngrediente();
+                    break;
+                case 3:
+                    buscarIngrediente();
+                    break;
+                case 4:
+                    mostrarInventario();
+                    break;
+                case 5:
+                    actualizarCantidadIngrediente();
+                    break;
+                case 6:
+                    verificarStockIngrediente();
+                    break;
+                case 7:
+                    guardarInventarioACSV();
+                    break;
+                case 8:
+                    cargarInventarioDesdeCSV();
+                    break;
+                case 9:
+                    mostrarEstadisticasInventario();
+                    break;
+            }
+        } while (opcion != 0);
     }
 
     // Método para cargar inventario desde CSV (automático al inicio)
@@ -107,8 +172,17 @@ public class GestionInventario {
                         Ingrediente ingrediente = new Ingrediente(id, nombre, cantidad, unidad);
                         int indice = funcionHash(id);
 
-                        insertarIngrediente(indice, ingrediente, 0);
-                        contador++;
+                        // Usar sondeo lineal para manejar colisiones
+                        int intento = 0;
+                        while (intento < TAMANO_TABLA) {
+                            int posicion = (indice + intento) % TAMANO_TABLA;
+                            if (tabla[posicion] == null) {
+                                tabla[posicion] = ingrediente;
+                                contador++;
+                                break;
+                            }
+                            intento++;
+                        }
 
                     } catch (NumberFormatException e) {
                         System.out.println("Error en línea: " + linea);
@@ -116,7 +190,7 @@ public class GestionInventario {
                 }
             }
             br.close();
-            System.out.println("✓ Inventario cargado automáticamente: " + contador + " ingredientes");
+            System.out.println("✓ Inventario cargado correctamente: " + contador + " ingredientes");
 
         } catch (IOException e) {
             System.out.println("Error al cargar inventario desde CSV: " + e.getMessage());
@@ -126,12 +200,12 @@ public class GestionInventario {
     private static File encontrarArchivo(String[] rutas, String tipo) {
         // Buscar en múltiples ubicaciones posibles
         String[] ubicaciones = {
-                "", // Directorio actual
-                System.getProperty("user.dir"), // Directorio de trabajo
-                new File(System.getProperty("user.dir")).getParent(), // Directorio padre
-                System.getProperty("user.dir") + "/src", // Subdirectorio src
-                System.getProperty("user.dir") + "/data", // Subdirectorio data
-                System.getProperty("user.dir") + "/src/data" // src/data
+            "", // Directorio actual
+            System.getProperty("user.dir"), // Directorio de trabajo
+            new File(System.getProperty("user.dir")).getParent(), // Directorio padre
+            System.getProperty("user.dir") + "/src", // Subdirectorio src
+            System.getProperty("user.dir") + "/data", // Subdirectorio data
+            System.getProperty("user.dir") + "/src/data" // src/data
         };
 
         for (String ubicacion : ubicaciones) {
@@ -185,116 +259,64 @@ public class GestionInventario {
         }
     }
 
-    private static void insertarIngrediente(int indice, Ingrediente ingrediente, int intento) {
-        if (intento >= TAMANO_TABLA) {
-            System.out.println("No se pudo agregar el ingrediente. Tabla llena.");
-            return;
-        }
-
-        int nuevaPosicion = (indice + intento) % TAMANO_TABLA;
-        if (tabla[nuevaPosicion] == null) {
-            tabla[nuevaPosicion] = ingrediente;
-            return;
-        }
-
-        insertarIngrediente(indice, ingrediente, intento + 1);
-    }
-
     private static void agregarIngrediente() {
-        System.out.print("ID del ingrediente: ");
-        int id = obtenerEnteroPositivoRecursivo("ID del ingrediente: ", scanner.nextLine().trim(), 0);
+        int id = obtenerEnteroPositivo("ID del ingrediente: ");
+        
+        // Verificar si el ID ya existe
+        if (buscarIndiceRecursivo(id, funcionHash(id), 0) != -1) {
+            System.out.println("Error: Ya existe un ingrediente con ID " + id);
+            return;
+        }
 
-        System.out.print("Nombre del ingrediente: ");
-        String nombre = obtenerEntradaNoVaciaRecursivo("Nombre del ingrediente: ", scanner.nextLine().trim());
-
-        System.out.print("Cantidad en inventario: ");
-        double cantidad = obtenerDoublePositivoRecursivo("Cantidad en inventario: ", scanner.nextLine().trim(), 0);
-
-        System.out.print("Unidad de medida: ");
-        String unidad = obtenerEntradaNoVaciaRecursivo("Unidad de medida: ", scanner.nextLine().trim());
+        String nombre = obtenerStringNoVacio("Nombre del ingrediente: ");
+        double cantidad = obtenerDoublePositivo("Cantidad en inventario: ");
+        String unidad = obtenerStringNoVacio("Unidad de medida: ");
 
         int indice = funcionHash(id);
         Ingrediente nuevoIngrediente = new Ingrediente(id, nombre, cantidad, unidad);
 
-        manejarInsercionIngrediente(indice, nuevoIngrediente, 1);
-    }
-
-    private static void manejarInsercionIngrediente(int indice, Ingrediente ingrediente, int intento) {
-        if (tabla[indice] == null) {
-            tabla[indice] = ingrediente;
-            System.out.println("Ingrediente agregado en posición " + indice);
-            return;
+        // Usar sondeo lineal para manejar colisiones
+        int intento = 0;
+        while (intento < TAMANO_TABLA) {
+            int posicion = (indice + intento) % TAMANO_TABLA;
+            if (tabla[posicion] == null) {
+                tabla[posicion] = nuevoIngrediente;
+                System.out.println("✓ Ingrediente agregado correctamente en posición " + posicion);
+                return;
+            }
+            intento++;
         }
 
-        manejarColisionInsercion(indice, ingrediente, intento);
-    }
-
-    private static void manejarColisionInsercion(int indice, Ingrediente ingrediente, int intento) {
-        if (intento >= TAMANO_TABLA) {
-            System.out.println("No se pudo agregar el ingrediente. Inventario lleno.");
-            return;
-        }
-
-        int nuevaPosicion = (indice + intento) % TAMANO_TABLA;
-        if (tabla[nuevaPosicion] == null) {
-            tabla[nuevaPosicion] = ingrediente;
-            System.out.println("Ingrediente agregado en posición " + nuevaPosicion + " (colisión resuelta)");
-            return;
-        }
-
-        manejarColisionInsercion(indice, ingrediente, intento + 1);
+        System.out.println("Error: No se pudo agregar el ingrediente. Inventario lleno.");
     }
 
     private static void eliminarIngrediente() {
-        System.out.print("ID del ingrediente a eliminar: ");
-        int id = obtenerEnteroPositivoRecursivo("ID del ingrediente a eliminar: ", scanner.nextLine().trim(), 0);
+        int id = obtenerEnteroPositivo("ID del ingrediente a eliminar: ");
 
         int indice = buscarIndiceRecursivo(id, funcionHash(id), 0);
-        manejarEliminacionIngrediente(indice);
-    }
-
-    private static void manejarEliminacionIngrediente(int indice) {
         if (indice != -1) {
+            String nombreEliminado = tabla[indice].nombre;
             tabla[indice] = null;
-            System.out.println("Ingrediente eliminado de la posición " + indice);
-            return;
+            System.out.println("✓ Ingrediente '" + nombreEliminado + "' eliminado correctamente.");
+        } else {
+            System.out.println("Error: No se encontró un ingrediente con ID " + id);
         }
-
-        System.out.println("Ingrediente no encontrado.");
     }
 
     private static void buscarIngrediente() {
-        System.out.print("ID del ingrediente a buscar: ");
-        int id = obtenerEnteroPositivoRecursivo("ID del ingrediente a buscar: ", scanner.nextLine().trim(), 0);
+        int id = obtenerEnteroPositivo("ID del ingrediente a buscar: ");
 
         int indice = buscarIndiceRecursivo(id, funcionHash(id), 0);
-        manejarResultadoBusqueda(indice);
-    }
-
-    private static void manejarResultadoBusqueda(int indice) {
         if (indice != -1) {
-            System.out.println("Ingrediente encontrado: " + tabla[indice]);
-            return;
+            System.out.println("✓ Ingrediente encontrado:");
+            System.out.println(tabla[indice]);
+        } else {
+            System.out.println("Error: No se encontró un ingrediente con ID " + id);
         }
-
-        System.out.println("Ingrediente no encontrado.");
-    }
-
-    private static int buscarIndiceRecursivo(int id, int indice, int intento) {
-        if (intento >= TAMANO_TABLA) {
-            return -1;
-        }
-
-        int posicion = (indice + intento) % TAMANO_TABLA;
-        if (tabla[posicion] != null && tabla[posicion].id == id) {
-            return posicion;
-        }
-
-        return buscarIndiceRecursivo(id, indice, intento + 1);
     }
 
     private static void mostrarInventario() {
-        int totalIngredientes = contarIngredientes(0, 0);
+        int totalIngredientes = contarIngredientesRecursivo(0, 0);
 
         if (totalIngredientes == 0) {
             System.out.println("El inventario está vacío.");
@@ -303,157 +325,193 @@ public class GestionInventario {
 
         System.out.println("\n=== INVENTARIO COMPLETO ===");
         System.out.println("Total de ingredientes: " + totalIngredientes);
-        System.out.println("---------------------------");
+        System.out.println("Capacidad de la tabla: " + TAMANO_TABLA);
+        System.out.println("Espacio disponible: " + (TAMANO_TABLA - totalIngredientes));
+        System.out.println("----------------------------------------");
 
-        mostrarSoloIngredientes(0);
+        mostrarIngredientesRecursivo(0, 1);
     }
 
-    private static int contarIngredientes(int indice, int contador) {
+    private static int contarIngredientesRecursivo(int indice, int contador) {
         if (indice >= TAMANO_TABLA) {
             return contador;
         }
 
         if (tabla[indice] != null) {
-            return contarIngredientes(indice + 1, contador + 1);
+            return contarIngredientesRecursivo(indice + 1, contador + 1);
         }
 
-        return contarIngredientes(indice + 1, contador);
+        return contarIngredientesRecursivo(indice + 1, contador);
     }
 
-    private static void mostrarSoloIngredientes(int indice) {
+    private static void mostrarIngredientesRecursivo(int indice, int numero) {
         if (indice >= TAMANO_TABLA) {
             return;
         }
 
         if (tabla[indice] != null) {
-            System.out.println("ID: " + tabla[indice].id + " | " +
-                    tabla[indice].nombre + " | " +
-                    tabla[indice].cantidad + " " +
-                    tabla[indice].unidad);
+            System.out.printf("%2d. [Posición %2d] %s\n", numero, indice, tabla[indice]);
+            mostrarIngredientesRecursivo(indice + 1, numero + 1);
+        } else {
+            mostrarIngredientesRecursivo(indice + 1, numero);
+        }
+    }
+
+    private static void actualizarCantidadIngrediente() {
+        int id = obtenerEnteroPositivo("ID del ingrediente a actualizar: ");
+
+        int indice = buscarIndiceRecursivo(id, funcionHash(id), 0);
+        if (indice != -1) {
+            System.out.println("Ingrediente actual: " + tabla[indice]);
+            double nuevaCantidad = obtenerDoublePositivo("Nueva cantidad: ");
+            
+            double cantidadAnterior = tabla[indice].cantidad;
+            tabla[indice].cantidad = nuevaCantidad;
+            
+            System.out.printf("✓ Cantidad actualizada: %.1f → %.1f %s\n", 
+                cantidadAnterior, nuevaCantidad, tabla[indice].unidad);
+        } else {
+            System.out.println("Error: No se encontró un ingrediente con ID " + id);
+        }
+    }
+
+    private static void verificarStockIngrediente() {
+        int id = obtenerEnteroPositivo("ID del ingrediente a verificar: ");
+
+        int indice = buscarIndiceRecursivo(id, funcionHash(id), 0);
+        if (indice != -1) {
+            Ingrediente ingrediente = tabla[indice];
+            System.out.println("Stock actual: " + ingrediente);
+            
+            double cantidadRequerida = obtenerDoublePositivo("Cantidad requerida: ");
+            
+            if (ingrediente.cantidad >= cantidadRequerida) {
+                System.out.println("✓ Stock suficiente. Disponible: " + ingrediente.cantidad + " " + ingrediente.unidad);
+            } else {
+                double faltante = cantidadRequerida - ingrediente.cantidad;
+                System.out.printf("✗ Stock insuficiente. Faltan: %.1f %s\n", faltante, ingrediente.unidad);
+            }
+        } else {
+            System.out.println("Error: No se encontró un ingrediente con ID " + id);
+        }
+    }
+
+    private static void mostrarEstadisticasInventario() {
+        int totalIngredientes = contarIngredientesRecursivo(0, 0);
+        
+        if (totalIngredientes == 0) {
+            System.out.println("El inventario está vacío.");
+            return;
         }
 
-        mostrarSoloIngredientes(indice + 1);
+        System.out.println("\n=== ESTADÍSTICAS DEL INVENTARIO ===");
+        System.out.println("Total de ingredientes: " + totalIngredientes);
+        System.out.println("Capacidad total: " + TAMANO_TABLA);
+        System.out.printf("Porcentaje de uso: %.1f%%\n", (totalIngredientes * 100.0 / TAMANO_TABLA));
+        
+        // Calcular estadísticas de cantidades
+        double[] stats = calcularEstadisticasRecursivo(0, 0, 0.0, Double.MIN_VALUE, Double.MAX_VALUE);
+        System.out.printf("Cantidad total en inventario: %.1f\n", stats[0]);
+        System.out.printf("Cantidad promedio: %.1f\n", stats[0] / totalIngredientes);
+        System.out.printf("Cantidad máxima: %.1f\n", stats[1]);
+        System.out.printf("Cantidad mínima: %.1f\n", stats[2]);
+        
+        // Mostrar ingredientes con stock bajo (menos de 10 unidades)
+        System.out.println("\n--- INGREDIENTES CON STOCK BAJO (< 10) ---");
+        int bajos = mostrarStockBajoRecursivo(0, 0);
+        if (bajos == 0) {
+            System.out.println("No hay ingredientes con stock bajo.");
+        } else {
+            System.out.println("Total de ingredientes con stock bajo: " + bajos);
+        }
+    }
+
+    private static double[] calcularEstadisticasRecursivo(int indice, int contador, double suma, double max, double min) {
+        if (indice >= TAMANO_TABLA) {
+            return new double[]{suma, max, min};
+        }
+
+        if (tabla[indice] != null) {
+            double cantidad = tabla[indice].cantidad;
+            double nuevaSuma = suma + cantidad;
+            double nuevoMax = Math.max(max, cantidad);
+            double nuevoMin = Math.min(min, cantidad);
+            
+            return calcularEstadisticasRecursivo(indice + 1, contador + 1, nuevaSuma, nuevoMax, nuevoMin);
+        }
+
+        return calcularEstadisticasRecursivo(indice + 1, contador, suma, max, min);
+    }
+
+    private static int mostrarStockBajoRecursivo(int indice, int contador) {
+        if (indice >= TAMANO_TABLA) {
+            return contador;
+        }
+
+        if (tabla[indice] != null && tabla[indice].cantidad < 10) {
+            System.out.println("• " + tabla[indice].nombre + ": " + tabla[indice].cantidad + " " + tabla[indice].unidad);
+            return mostrarStockBajoRecursivo(indice + 1, contador + 1);
+        }
+
+        return mostrarStockBajoRecursivo(indice + 1, contador);
+    }
+
+    // Métodos de búsqueda recursiva
+    private static int buscarIndiceRecursivo(int id, int indice, int intento) {
+        if (intento >= TAMANO_TABLA) {
+            return -1;
+        }
+
+        int posicion = (indice + intento) % TAMANO_TABLA;
+        
+        if (tabla[posicion] != null && tabla[posicion].id == id) {
+            return posicion;
+        }
+
+        if (tabla[posicion] == null) {
+            return -1;
+        }
+
+        return buscarIndiceRecursivo(id, indice, intento + 1);
     }
 
     private static int funcionHash(int id) {
         return id % TAMANO_TABLA;
     }
 
-    private static String obtenerEntradaNoVaciaRecursivo(String mensaje, String input) {
-        if (input.isEmpty()) {
-            System.out.print("Este campo no puede estar vacío. " + mensaje);
-            return obtenerEntradaNoVaciaRecursivo(mensaje, scanner.nextLine().trim());
+    // Métodos públicos para integración con otros módulos
+    public static Ingrediente obtenerIngredientePorID(int id) {
+        int indice = buscarIndiceRecursivo(id, funcionHash(id), 0);
+        if (indice != -1) {
+            return tabla[indice];
         }
-        return input;
+        return null;
     }
 
-    private static int obtenerEnteroPositivoRecursivo(String mensaje, String input, int intentos) {
-        if (intentos > 10) return 1;
-
-        boolean esNumero = verificarEsNumero(input, 0, true);
-
-        if (!esNumero) {
-            System.out.print("Entrada no válida. Por favor, ingrese un número. " + mensaje);
-            return obtenerEnteroPositivoRecursivo(mensaje, scanner.nextLine().trim(), intentos + 1);
+    public static void actualizarCantidadIngrediente(int id, double nuevaCantidad) {
+        int indice = buscarIndiceRecursivo(id, funcionHash(id), 0);
+        if (indice != -1) {
+            tabla[indice].cantidad = nuevaCantidad;
         }
-
-        int valor = convertirStringAInt(input, 0, 0);
-
-        if (valor <= 0) {
-            System.out.print("Por favor, ingrese un número positivo. " + mensaje);
-            return obtenerEnteroPositivoRecursivo(mensaje, scanner.nextLine().trim(), intentos + 1);
-        }
-
-        return valor;
     }
 
-    private static double obtenerDoublePositivoRecursivo(String mensaje, String input, int intentos) {
-        if (intentos > 10) return 1.0;
-
-        boolean esNumero = verificarEsNumeroDecimal(input, 0, true, false);
-
-        if (!esNumero) {
-            System.out.print("Entrada no válida. Por favor, ingrese un número. " + mensaje);
-            return obtenerDoublePositivoRecursivo(mensaje, scanner.nextLine().trim(), intentos + 1);
+    public static boolean verificarStock(int id, double cantidadRequerida) {
+        Ingrediente ingrediente = obtenerIngredientePorID(id);
+        if (ingrediente != null) {
+            return ingrediente.cantidad >= cantidadRequerida;
         }
-
-        double valor = convertirStringADouble(input, 0, 0.0, 1.0, false);
-
-        if (valor <= 0) {
-            System.out.print("Por favor, ingrese un número positivo. " + mensaje);
-            return obtenerDoublePositivoRecursivo(mensaje, scanner.nextLine().trim(), intentos + 1);
-        }
-
-        return valor;
+        return false;
     }
 
-    private static boolean verificarEsNumero(String str, int index, boolean esNumero) {
-        if (index >= str.length()) return esNumero;
-        if (!esNumero) return false;
-
-        char c = str.charAt(index);
-        boolean esDigito = (c >= '0' && c <= '9') || (index == 0 && c == '-');
-
-        return verificarEsNumero(str, index + 1, esNumero && esDigito);
+    public static int getTotalIngredientes() {
+        return contarIngredientesRecursivo(0, 0);
     }
 
-    private static boolean verificarEsNumeroDecimal(String str, int index, boolean esNumero, boolean tienePunto) {
-        if (index >= str.length()) return esNumero;
-        if (!esNumero) return false;
-
-        char c = str.charAt(index);
-        boolean esDigito = (c >= '0' && c <= '9');
-        boolean esPunto = (c == '.' && !tienePunto && index > 0);
-        boolean esSigno = (c == '-' && index == 0);
-
-        boolean nuevoTienePunto = tienePunto || esPunto;
-
-        return verificarEsNumeroDecimal(str, index + 1,
-                esNumero && (esDigito || esPunto || esSigno),
-                nuevoTienePunto);
+    public static boolean estaVacio() {
+        return contarIngredientesRecursivo(0, 0) == 0;
     }
 
-    private static int convertirStringAInt(String str, int index, int resultado) {
-        if (index >= str.length()) return resultado;
-
-        char c = str.charAt(index);
-        if (c == '-') {
-            return -convertirStringAInt(str, index + 1, 0);
-        }
-
-        int digito = c - '0';
-        int nuevoResultado = resultado * 10 + digito;
-
-        return convertirStringAInt(str, index + 1, nuevoResultado);
-    }
-
-    private static double convertirStringADouble(String str, int index, double resultado, double divisor, boolean despuesPunto) {
-        if (index >= str.length()) return resultado;
-
-        char c = str.charAt(index);
-        if (c == '-') {
-            return -convertirStringADouble(str, index + 1, 0, 1, false);
-        }
-
-        if (c == '.') {
-            return convertirStringADouble(str, index + 1, resultado, 10, true);
-        }
-
-        int digito = c - '0';
-
-        return manejarDigitoDouble(str, index, resultado, divisor, despuesPunto, digito);
-    }
-
-    private static double manejarDigitoDouble(String str, int index, double resultado, double divisor, boolean despuesPunto, int digito) {
-        if (despuesPunto) {
-            double nuevoResultado = resultado + (digito / divisor);
-            return convertirStringADouble(str, index + 1, nuevoResultado, divisor * 10, true);
-        }
-
-        double nuevoResultado = resultado * 10 + digito;
-        return convertirStringADouble(str, index + 1, nuevoResultado, divisor, false);
-    }
-
+    // Clase interna para representar ingredientes
     static class Ingrediente {
         int id;
         String nombre;
@@ -469,33 +527,7 @@ public class GestionInventario {
 
         @Override
         public String toString() {
-            return String.format("ID: %d | %s | %.1f %s", id, nombre, cantidad, unidad);
+            return String.format("ID: %d | %-20s | %6.1f %-5s", id, nombre, cantidad, unidad);
         }
-    }
-
-    public static Ingrediente obtenerIngredientePorID(int id) {
-        int indice = buscarIndiceRecursivo(id, funcionHash(id), 0);
-        if (indice != -1) {
-            return tabla[indice];
-        }
-        return null;
-    }
-
-    public static void actualizarCantidadIngrediente(int id, double nuevaCantidad) {
-        int indice = buscarIndiceRecursivo(id, funcionHash(id), 0);
-        if (indice != -1) {
-            tabla[indice].cantidad = nuevaCantidad;
-            System.out.println("Cantidad actualizada para " + tabla[indice].nombre);
-        } else {
-            System.out.println("Ingrediente no encontrado.");
-        }
-    }
-
-    public static boolean verificarStock(int id, double cantidadRequerida) {
-        Ingrediente ingrediente = obtenerIngredientePorID(id);
-        if (ingrediente != null) {
-            return ingrediente.cantidad >= cantidadRequerida;
-        }
-        return false;
     }
 }
