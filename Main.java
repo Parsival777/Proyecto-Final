@@ -19,8 +19,7 @@ public class Main {
             System.out.println("7. Salir");
             System.out.print("Seleccione una opción: ");
 
-            opcion = scanner.nextInt();
-            scanner.nextLine(); // Limpiar buffer
+            opcion = obtenerEnteroEnRango(1, 7, "Seleccione una opción válida (1-7): ");
 
             switch (opcion) {
                 case 1:
@@ -44,12 +43,45 @@ public class Main {
                 case 7:
                     System.out.println("¡Gracias por usar el sistema! ¡Hasta pronto!");
                     break;
-                default:
-                    System.out.println("Opción inválida. Intente nuevamente.");
             }
         } while (opcion != 7);
 
         scanner.close();
+    }
+
+    // Método auxiliar para validar enteros en rango
+    private static int obtenerEnteroEnRango(int min, int max, String mensajeError) {
+        while (true) {
+            try {
+                String input = scanner.nextLine().trim();
+                int valor = Integer.parseInt(input);
+                if (valor >= min && valor <= max) {
+                    return valor;
+                } else {
+                    System.out.print(mensajeError);
+                }
+            } catch (NumberFormatException e) {
+                System.out.print("Por favor, ingrese un número válido. " + mensajeError);
+            }
+        }
+    }
+
+    // Método auxiliar para validar enteros positivos
+    private static int obtenerEnteroPositivo(String mensaje, String mensajeError) {
+        while (true) {
+            try {
+                System.out.print(mensaje);
+                String input = scanner.nextLine().trim();
+                int valor = Integer.parseInt(input);
+                if (valor > 0) {
+                    return valor;
+                } else {
+                    System.out.println(mensajeError);
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Por favor, ingrese un número válido. " + mensajeError);
+            }
+        }
     }
 
     private static void gestionarMenuAlimentos() {
@@ -63,8 +95,7 @@ public class Main {
             System.out.println("8. Volver al menú principal");
             System.out.print("Seleccione una opción: ");
 
-            opcion = scanner.nextInt();
-            scanner.nextLine();
+            opcion = obtenerEnteroEnRango(1, 8, "Seleccione una opción válida (1-4, 8): ");
 
             switch (opcion) {
                 case 1:
@@ -82,8 +113,6 @@ public class Main {
                 case 8:
                     System.out.println("Volviendo al menú principal...");
                     break;
-                default:
-                    System.out.println("Opción inválida. Intente nuevamente.");
             }
         } while (opcion != 8);
     }
@@ -94,10 +123,9 @@ public class Main {
     }
 
     private static void buscarProductoPorID() {
-        System.out.print("Ingrese el ID del producto a buscar: ");
-        int id = scanner.nextInt();
-        scanner.nextLine();
-
+        int id = obtenerEnteroPositivo("Ingrese el ID del producto a buscar: ", 
+                                     "El ID debe ser un número positivo.");
+        
         MenuAlimentos.ProductoMenu producto = MenuAlimentos.buscarProductoPorID(id);
 
         if (producto != null) {
@@ -130,9 +158,8 @@ public class Main {
     }
 
     private static void realizarPedidoMesa() {
-        System.out.print("Ingrese el número de mesa: ");
-        int numeroMesa = scanner.nextInt();
-        scanner.nextLine();
+        int numeroMesa = obtenerEnteroPositivo("Ingrese el número de mesa: ", 
+                                              "El número de mesa debe ser positivo.");
 
         MenuAlimentos.Ticket ticket = new MenuAlimentos.Ticket(numeroMesa);
 
@@ -141,9 +168,8 @@ public class Main {
 
         boolean continuar = true;
         while (continuar) {
-            System.out.print("Seleccione el número del producto (0 para terminar): ");
-            int opcionProducto = scanner.nextInt();
-            scanner.nextLine();
+            int opcionProducto = obtenerEnteroEnRango(0, MenuAlimentos.obtenerCantidadProductos(), 
+                                                    "Seleccione el número del producto (0 para terminar): ");
 
             if (opcionProducto == 0) {
                 continuar = false;
@@ -156,10 +182,7 @@ public class Main {
                 continue;
             }
 
-            System.out.print("Cantidad: ");
-            int cantidad = scanner.nextInt();
-            scanner.nextLine();
-
+            int cantidad = obtenerEnteroPositivo("Cantidad: ", "La cantidad debe ser positiva.");
             System.out.print("Comentarios (opcional): ");
             String comentarios = scanner.nextLine();
 
