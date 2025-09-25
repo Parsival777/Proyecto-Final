@@ -1,59 +1,90 @@
 import java.util.Scanner;
 
 public class EstadisticasVentas {
-    private static int[] ventasPorHora = new int[24]; // 24 horas del día
-    private static double[] montosPorHora = new double[24]; // Montos en MXN por hora
+    private static int[] ventasPorHora = new int[24];
+    private static double[] montosPorHora = new double[24];
     private static int totalVentasDia = 0;
     private static double totalMontoDia = 0.0;
     private static Scanner scanner = new Scanner(System.in);
 
-    public static void menuEstadisticas() {
-        System.out.println("\n=== ESTADÍSTICAS Y ANÁLISIS DE VENTAS ===");
-        System.out.println("1. Mostrar resumen de ventas del día");
-        System.out.println("2. Calcular venta total del día (recursivo)");
-        System.out.println("3. Calcular promedio de ventas por hora");
-        System.out.println("4. Encontrar hora pico de ventas");
-        System.out.println("5. Ordenar datos de ventas (Quicksort recursivo)");
-        System.out.println("6. Buscar dato de venta (Búsqueda binaria)");
-        System.out.println("7. Análisis de tendencias (Divide y Vencerás)");
-        System.out.println("0. Volver al menú principal");
-        System.out.print("Seleccione una opción: ");
-
-        procesarOpcionEstadisticas(scanner.nextLine().trim());
+    // Métodos de validación
+    private static int obtenerEnteroValido(String mensaje) {
+        while (true) {
+            try {
+                System.out.print(mensaje);
+                String input = scanner.nextLine().trim();
+                return Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                System.out.println("Error: Por favor ingrese un número entero válido.");
+            }
+        }
     }
 
-    private static void procesarOpcionEstadisticas(String input) {
-        if (input.equals("0")) {
-            System.out.println("Volviendo al menú principal...");
-            return;
+    private static int obtenerEnteroEnRango(String mensaje, int min, int max) {
+        while (true) {
+            int valor = obtenerEnteroValido(mensaje);
+            if (valor >= min && valor <= max) {
+                return valor;
+            } else {
+                System.out.printf("Error: El valor debe estar entre %d y %d.\n", min, max);
+            }
         }
+    }
 
-        switch (input) {
-            case "1":
-                mostrarResumenVentas();
-                break;
-            case "2":
-                calcularVentaTotalRecursivo();
-                break;
-            case "3":
-                calcularPromedioVentas();
-                break;
-            case "4":
-                encontrarHoraPico();
-                break;
-            case "5":
-                ordenarDatosVentas();
-                break;
-            case "6":
-                buscarDatoVenta();
-                break;
-            case "7":
-                analizarTendenciasDivideVenceras();
-                break;
-            default:
-                System.out.println("Opción no válida.");
+    private static double obtenerDoubleValido(String mensaje) {
+        while (true) {
+            try {
+                System.out.print(mensaje);
+                String input = scanner.nextLine().trim();
+                return Double.parseDouble(input);
+            } catch (NumberFormatException e) {
+                System.out.println("Error: Por favor ingrese un número válido.");
+            }
         }
-        menuEstadisticas();
+    }
+
+    public static void menuEstadisticas() {
+        int opcion;
+        do {
+            System.out.println("\n=== ESTADÍSTICAS Y ANÁLISIS DE VENTAS ===");
+            System.out.println("1. Mostrar resumen de ventas del día");
+            System.out.println("2. Calcular venta total del día (recursivo)");
+            System.out.println("3. Calcular promedio de ventas por hora");
+            System.out.println("4. Encontrar hora pico de ventas");
+            System.out.println("5. Ordenar datos de ventas (Quicksort recursivo)");
+            System.out.println("6. Buscar dato de venta (Búsqueda binaria)");
+            System.out.println("7. Análisis de tendencias (Divide y Vencerás)");
+            System.out.println("0. Volver al menú principal");
+            
+            opcion = obtenerEnteroEnRango("Seleccione una opción: ", 0, 7);
+
+            switch (opcion) {
+                case 0:
+                    System.out.println("Volviendo al menú principal...");
+                    break;
+                case 1:
+                    mostrarResumenVentas();
+                    break;
+                case 2:
+                    calcularVentaTotalRecursivo();
+                    break;
+                case 3:
+                    calcularPromedioVentas();
+                    break;
+                case 4:
+                    encontrarHoraPico();
+                    break;
+                case 5:
+                    ordenarDatosVentas();
+                    break;
+                case 6:
+                    buscarDatoVenta();
+                    break;
+                case 7:
+                    analizarTendenciasDivideVenceras();
+                    break;
+            }
+        } while (opcion != 0);
     }
 
     // Registrar venta desde tickets (se llama automáticamente)
@@ -195,8 +226,7 @@ public class EstadisticasVentas {
             return;
         }
 
-        System.out.print("Ingrese el monto a buscar: ");
-        double objetivo = obtenerDoublePositivo("Ingrese el monto a buscar: ", scanner.nextLine().trim(), 0);
+        double objetivo = obtenerDoubleValido("Ingrese el monto a buscar: ");
 
         double[] copiaOrdenada = montosPorHora.clone();
         quicksortRecursivo(copiaOrdenada, 0, 23);
@@ -276,22 +306,6 @@ public class EstadisticasVentas {
         }
 
         mostrarArrayRecursivo(array, index + 1);
-    }
-
-    private static double obtenerDoublePositivo(String mensaje, String input, int intentos) {
-        if (intentos > 10) return 0.0;
-
-        try {
-            double valor = Double.parseDouble(input);
-            if (valor >= 0) {
-                return valor;
-            }
-        } catch (NumberFormatException e) {
-            // Continuar al siguiente intento
-        }
-
-        System.out.print("Por favor, ingrese un número válido. " + mensaje);
-        return obtenerDoublePositivo(mensaje, scanner.nextLine().trim(), intentos + 1);
     }
 
     // Método para reiniciar estadísticas diarias
