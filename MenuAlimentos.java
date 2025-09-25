@@ -3,6 +3,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MenuAlimentos {
     private static ProductoMenu[] menu;
@@ -41,10 +45,11 @@ public class MenuAlimentos {
 
             br = new BufferedReader(new FileReader(archivo));
             int index = 0;
-            br.readLine();
+            br.readLine(); // Saltar encabezado
 
             while ((linea = br.readLine()) != null) {
-                if (linea.trim().isEmpty() || linea.startsWith(",,")) continue;
+                if (linea.trim().isEmpty() || linea.startsWith(",,"))
+                    continue;
 
                 String[] datos = linea.split(",");
                 if (datos.length >= 3) {
@@ -110,12 +115,29 @@ public class MenuAlimentos {
         return null;
     }
 
-    // ... El resto de la clase se mantiene igual (sin cambios en ProductoMenu, PedidoMesa, Ticket)
     private static String determinarCategoria(int id) {
-        if (id >= 101 && id <= 130) return "Paninis y Antipasti";
-        if (id >= 201 && id <= 225) return "Bebidas Frías";
-        if (id >= 301 && id <= 325) return "Bebidas Calientes";
-        if (id >= 401 && id <= 420) return "Postres";
+        if (id >= 101 && id <= 130)
+            return "Paninis y Antipasti";
+        if (id >= 201 && id <= 225)
+            return "Bebidas Frías";
+        if (id >= 301 && id <= 325)
+            return "Bebidas Calientes";
+        if (id >= 401 && id <= 420)
+            return "Postres";
+
+        // Para los IDs del 1-25 que tienes en tu ejemplo, asignar categorías
+        // específicas
+        if (id >= 1 && id <= 12) {
+            if (id <= 6)
+                return "Bebidas Calientes";
+            else
+                return "Bebidas Frías";
+        }
+        if (id >= 13 && id <= 19)
+            return "Paninis y Antipasti";
+        if (id >= 20 && id <= 25)
+            return "Postres";
+
         return "General";
     }
 
@@ -129,10 +151,66 @@ public class MenuAlimentos {
             return;
         }
 
-        System.out.println("\n=== MENÚ DE CAFETERÍA ===");
-        for (int i = 0; i < menu.length; i++) {
-            System.out.println((i + 1) + ". " + menu[i]);
+        System.out.println("\n╔════════════════════════════════════════════════════════════════════════════════╗");
+        System.out.println(
+                "║                               MENÚ DE CAFETERÍA POWER CAFE                     ║");
+        System.out.println("╠════════════════════════════════════════════════════════════════════════════════╣");
+
+        // Agrupar productos por categoría
+        Map<String, List<ProductoMenu>> productosPorCategoria = new LinkedHashMap<>();
+
+        // Inicializar categorías en el orden deseado
+        String[] categorias = { "Bebidas Calientes", "Bebidas Frías", "Paninis y Antipasti", "Postres", "General" };
+        for (String categoria : categorias) {
+            productosPorCategoria.put(categoria, new ArrayList<>());
         }
+
+        // Agrupar productos
+        for (ProductoMenu producto : menu) {
+            if (productosPorCategoria.containsKey(producto.categoria)) {
+                productosPorCategoria.get(producto.categoria).add(producto);
+            } else {
+                productosPorCategoria.get("General").add(producto);
+            }
+        }
+
+        // Mostrar productos por categoría
+        boolean primeraCategoria = true;
+        for (Map.Entry<String, List<ProductoMenu>> entry : productosPorCategoria.entrySet()) {
+            String categoria = entry.getKey();
+            List<ProductoMenu> productos = entry.getValue();
+
+            if (!productos.isEmpty()) {
+                // Encabezado de categoría
+                if (!primeraCategoria) {
+                    System.out.println(
+                            "╠════════════════════════════════════════════════════════════════════════════════╣");
+                }
+                System.out.printf("║ %-78s ║\n", " " + categoria.toUpperCase() + " ");
+                System.out
+                        .println("╠════════╦═══════════════════════════════════════════════════════╦═══════════════╣");
+                System.out
+                        .println("║   ID   ║                  PRODUCTO                             ║     PRECIO    ║");
+                System.out
+                        .println("╠════════╬═══════════════════════════════════════════════════════╬═══════════════╣");
+
+                // Productos de la categoría
+                for (ProductoMenu producto : productos) {
+                    String nombreProducto = producto.nombre;
+                    // Limitar la longitud del nombre para que quepa en la tabla
+                    if (nombreProducto.length() > 40) {
+                        nombreProducto = nombreProducto.substring(0, 37) + "...";
+                    }
+
+                    System.out.printf("║  %4d  ║ %-53s ║   $%9.1f  ║\n",
+                            producto.id, nombreProducto, producto.precio);
+                }
+                primeraCategoria = false;
+            }
+        }
+
+        System.out.println("╚════════╩═══════════════════════════════════════════════════════╩═══════════════╝");
+        System.out.println("Total de productos disponibles: " + menu.length + "\n");
     }
 
     public static ProductoMenu obtenerProducto(int opcion) {
@@ -189,7 +267,7 @@ public class MenuAlimentos {
 
         @Override
         public String toString() {
-            return String.format("%d. %s - $%.2f MXN (%s)", id, nombre, precio, categoria);
+            return String.format("%d. %s - $%.2f MXN", id, nombre, precio);
         }
     }
 
@@ -239,7 +317,8 @@ public class MenuAlimentos {
         }
 
         public void mostrarTicket() {
-            String horario = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            String horario = java.time.LocalDateTime.now()
+                    .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
             System.out.println("╔══════════════════════════════════════════════════════╗");
             System.out.println("║                   TICKET MESA " + String.format("%-25s", numeroMesa) + "║");
@@ -259,7 +338,8 @@ public class MenuAlimentos {
                         pedido.cantidad, nombreProducto, pedido.getSubtotal());
                 System.out.println(lineaProducto);
 
-                if (pedido.comentarios != null && !pedido.comentarios.trim().isEmpty() && !pedido.comentarios.equals("nan")) {
+                if (pedido.comentarios != null && !pedido.comentarios.trim().isEmpty()
+                        && !pedido.comentarios.equals("nan")) {
                     String comentario = pedido.comentarios;
                     if (comentario.length() > 42) {
                         comentario = comentario.substring(0, 42) + "...";
@@ -270,7 +350,7 @@ public class MenuAlimentos {
             }
 
             System.out.println("╠══════════════════════════════════════════════════════╣");
-            System.out.printf ("║        TOTAL:                             $%10.2f   ║%n", calcularTotal());
+            System.out.printf("║        TOTAL:                             $%10.2f   ║%n", calcularTotal());
             System.out.println("╚══════════════════════════════════════════════════════╝");
         }
 
