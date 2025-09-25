@@ -4,7 +4,7 @@ public class Main {
     private static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
-        // Cargar el menú desde CSV al iniciar el programa
+
         MenuAlimentos.cargarMenuDesdeCSV();
 
         int opcion;
@@ -15,11 +15,10 @@ public class Main {
             System.out.println("3. Gestión de Tareas (Cola de Prioridades)");
             System.out.println("4. Gestión de Empleados (Árbol Binario)");
             System.out.println("5. Estadísticas y Análisis de Ventas (Recursividad + Divide y Vencerás)");
-            System.out.println("6. Gestión de Inventario");
-            System.out.println("7. Salir");
+            System.out.println("6. Salir");
             System.out.print("Seleccione una opción: ");
 
-            opcion = obtenerEnteroEnRango(1, 7, "Seleccione una opción válida (1-7): ");
+            opcion = obtenerEnteroEnRango(1, 6, "Seleccione una opción válida (1-6): ");
 
             switch (opcion) {
                 case 1:
@@ -38,18 +37,14 @@ public class Main {
                     gestionarEstadisticasVentas();
                     break;
                 case 6:
-                    gestionarInventario();
-                    break;
-                case 7:
                     System.out.println("¡Gracias por usar el sistema! ¡Hasta pronto!");
                     break;
             }
-        } while (opcion != 7);
+        } while (opcion != 6);
 
         scanner.close();
     }
 
-    // Método auxiliar para validar enteros en rango
     private static int obtenerEnteroEnRango(int min, int max, String mensajeError) {
         while (true) {
             try {
@@ -66,7 +61,6 @@ public class Main {
         }
     }
 
-    // Método auxiliar para validar enteros positivos
     private static int obtenerEnteroPositivo(String mensaje, String mensajeError) {
         while (true) {
             try {
@@ -123,9 +117,9 @@ public class Main {
     }
 
     private static void buscarProductoPorID() {
-        int id = obtenerEnteroPositivo("Ingrese el ID del producto a buscar: ", 
-                                     "El ID debe ser un número positivo.");
-        
+        int id = obtenerEnteroPositivo("Ingrese el ID del producto a buscar: ",
+                "El ID debe ser un número positivo.");
+
         MenuAlimentos.ProductoMenu producto = MenuAlimentos.buscarProductoPorID(id);
 
         if (producto != null) {
@@ -158,8 +152,8 @@ public class Main {
     }
 
     private static void realizarPedidoMesa() {
-        int numeroMesa = obtenerEnteroPositivo("Ingrese el número de mesa: ", 
-                                              "El número de mesa debe ser positivo.");
+        int numeroMesa = obtenerEnteroPositivo("Ingrese el número de mesa: ",
+                "El número de mesa debe ser positivo.");
 
         MenuAlimentos.Ticket ticket = new MenuAlimentos.Ticket(numeroMesa);
 
@@ -168,8 +162,8 @@ public class Main {
 
         boolean continuar = true;
         while (continuar) {
-            int opcionProducto = obtenerEnteroEnRango(0, MenuAlimentos.obtenerCantidadProductos(), 
-                                                    "Seleccione el número del producto (0 para terminar): ");
+            int opcionProducto = obtenerEnteroEnRango(0, MenuAlimentos.obtenerCantidadProductos(),
+                    "Seleccione el número del producto (0 para terminar): ");
 
             if (opcionProducto == 0) {
                 continuar = false;
@@ -192,7 +186,6 @@ public class Main {
             System.out.println("✓ Producto agregado al pedido");
         }
 
-        // Mostrar ticket final
         ticket.mostrarTicket();
     }
 
@@ -210,9 +203,5 @@ public class Main {
 
     private static void gestionarEstadisticasVentas() {
         EstadisticasVentas.menuEstadisticas();
-    }
-
-    private static void gestionarInventario() {
-        GestionInventario.menuGestionInventario();
     }
 }
