@@ -12,6 +12,53 @@ public class GestionMesas {
     private static Map<Integer, Mesa> mesas = new HashMap<>();
     private static Scanner scanner = new Scanner(System.in);
 
+    // Métodos de validación
+    private static int obtenerEnteroValido(String mensaje) {
+        while (true) {
+            try {
+                System.out.print(mensaje);
+                String input = scanner.nextLine().trim();
+                return Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                System.out.println("Error: Por favor ingrese un número entero válido.");
+            }
+        }
+    }
+
+    private static int obtenerEnteroPositivo(String mensaje) {
+        while (true) {
+            int valor = obtenerEnteroValido(mensaje);
+            if (valor > 0) {
+                return valor;
+            } else {
+                System.out.println("Error: El valor debe ser positivo.");
+            }
+        }
+    }
+
+    private static int obtenerEnteroEnRango(String mensaje, int min, int max) {
+        while (true) {
+            int valor = obtenerEnteroValido(mensaje);
+            if (valor >= min && valor <= max) {
+                return valor;
+            } else {
+                System.out.printf("Error: El valor debe estar entre %d y %d.\n", min, max);
+            }
+        }
+    }
+
+    private static String obtenerStringNoVacio(String mensaje) {
+        while (true) {
+            System.out.print(mensaje);
+            String input = scanner.nextLine().trim();
+            if (!input.isEmpty()) {
+                return input;
+            } else {
+                System.out.println("Error: Este campo no puede estar vacío.");
+            }
+        }
+    }
+
     public static void menuGestionMesas() {
         System.out.println("\n=== GESTIÓN DE MESAS ===");
 
@@ -24,36 +71,40 @@ public class GestionMesas {
 
         System.out.println("A. Agregar nueva mesa");
         System.out.println("0. Volver al menú principal");
-        System.out.print("Seleccione una opción: ");
-
-        procesarOpcionMesas(scanner.nextLine().trim().toUpperCase());
+        
+        procesarOpcionMesas();
     }
 
-    private static void procesarOpcionMesas(String input) {
-        if (input.equals("0")) {
-            return;
-        }
+    private static void procesarOpcionMesas() {
+        while (true) {
+            System.out.print("Seleccione una opción: ");
+            String input = scanner.nextLine().trim().toUpperCase();
 
-        if (input.equals("A")) {
-            agregarMesa();
-            return;
-        }
-
-        try {
-            int numeroMesa = Integer.parseInt(input);
-            if (mesas.containsKey(numeroMesa)) {
-                menuMesaEspecifica(mesas.get(numeroMesa));
+            if (input.equals("0")) {
                 return;
             }
-        } catch (NumberFormatException e) {}
 
-        System.out.println("Opción no válida.");
-        menuGestionMesas();
+            if (input.equals("A")) {
+                agregarMesa();
+                return;
+            }
+
+            try {
+                int numeroMesa = Integer.parseInt(input);
+                if (mesas.containsKey(numeroMesa)) {
+                    menuMesaEspecifica(mesas.get(numeroMesa));
+                    return;
+                } else {
+                    System.out.println("Error: La mesa " + numeroMesa + " no existe.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Error: Opción no válida. Use 'A' para agregar, '0' para volver, o un número de mesa existente.");
+            }
+        }
     }
 
     private static void agregarMesa() {
-        System.out.print("Ingrese el número de la mesa: ");
-        int numeroMesa = Integer.parseInt(scanner.nextLine().trim());
+        int numeroMesa = obtenerEnteroPositivo("Ingrese el número de la mesa: ");
 
         if (mesas.containsKey(numeroMesa)) {
             System.out.println("La mesa " + numeroMesa + " ya existe.");
@@ -69,45 +120,40 @@ public class GestionMesas {
     }
 
     private static void menuMesaEspecifica(Mesa mesa) {
-        System.out.println("\n=== MESA " + mesa.getNumero() + " ===");
-        System.out.println("1. Agregar pedido");
-        System.out.println("2. Procesar pedido (FIFO)");
-        System.out.println("3. Mostrar todos los pedidos de la mesa");
-        System.out.println("4. Limpiar mesa y generar ticket");
-        System.out.println("0. Volver al menú de gestión de mesas");
-        System.out.print("Seleccione una opción: ");
+        int opcion;
+        do {
+            System.out.println("\n=== MESA " + mesa.getNumero() + " ===");
+            System.out.println("1. Agregar pedido");
+            System.out.println("2. Procesar pedido (FIFO)");
+            System.out.println("3. Mostrar todos los pedidos de la mesa");
+            System.out.println("4. Limpiar mesa y generar ticket");
+            System.out.println("0. Volver al menú de gestión de mesas");
+            
+            opcion = obtenerEnteroEnRango("Seleccione una opción: ", 0, 4);
 
-        String input = scanner.nextLine().trim();
-
-        switch (input) {
-            case "0":
-                menuGestionMesas();
-                break;
-            case "1":
-                agregarPedidoMesa(mesa);
-                menuMesaEspecifica(mesa);
-                break;
-            case "2":
-                procesarPedidosMesa(mesa);
-                menuMesaEspecifica(mesa);
-                break;
-            case "3":
-                mostrarPedidosMesa(mesa);
-                menuMesaEspecifica(mesa);
-                break;
-            case "4":
-                limpiarMesaEspecifica(mesa);
-                break;
-            default:
-                System.out.println("Opción no válida.");
-                menuMesaEspecifica(mesa);
-        }
+            switch (opcion) {
+                case 0:
+                    menuGestionMesas();
+                    break;
+                case 1:
+                    agregarPedidoMesa(mesa);
+                    break;
+                case 2:
+                    procesarPedidosMesa(mesa);
+                    break;
+                case 3:
+                    mostrarPedidosMesa(mesa);
+                    break;
+                case 4:
+                    limpiarMesaEspecifica(mesa);
+                    break;
+            }
+        } while (opcion != 0);
     }
 
     private static void agregarPedidoMesa(Mesa mesa) {
         MenuAlimentos.mostrarMenu();
-        System.out.print("Seleccione el número del producto: ");
-        int opcion = Integer.parseInt(scanner.nextLine().trim());
+        int opcion = obtenerEnteroValido("Seleccione el número del producto: ");
 
         MenuAlimentos.ProductoMenu producto = MenuAlimentos.obtenerProducto(opcion);
         if (producto == null) {
@@ -115,11 +161,8 @@ public class GestionMesas {
             return;
         }
 
-        System.out.print("Cantidad: ");
-        int cantidad = Integer.parseInt(scanner.nextLine().trim());
-
-        System.out.print("Comentarios o especificaciones: ");
-        String comentarios = scanner.nextLine().trim();
+        int cantidad = obtenerEnteroEnRango("Cantidad: ", 1, 100);
+        String comentarios = obtenerStringNoVacio("Comentarios o especificaciones: ");
 
         MenuAlimentos.PedidoMesa pedido = new MenuAlimentos.PedidoMesa(producto, comentarios, cantidad);
         mesa.agregarPedido(pedido);
