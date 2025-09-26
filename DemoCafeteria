@@ -1,281 +1,249 @@
-
 import java.util.Random;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 public class DemoCafeteria {
     private static Random random = new Random();
 
-    // Arrays de datos aleatorios para la demo
-    private static final String[] NOMBRES_EMPLEADOS = {
-            "María González", "Carlos López", "Ana Martínez", "Pedro Sánchez",
-            "Laura Rodríguez", "Miguel Hernández", "Elena Castro", "Javier Ramírez",
-            "Isabel Torres", "Fernando Díaz", "Carmen Ruiz", "Antonio Morales"
-    };
+    public static void ejecutarDemo() {
+        System.out.println("\n" + "=".repeat(80));
+        System.out.println("                   DEMOSTRACIÓN DEL SISTEMA DE CAFETERÍA");
+        System.out.println("=".repeat(80));
 
-    private static final String[] DEPARTAMENTOS = {
-            "Cocina", "Servicio", "Administración", "Limpieza", "Bar", "Recepcion"
-    };
+        // Asegurarse de que el menú esté cargado
+        MenuAlimentos.cargarMenuDesdeCSV();
 
-    private static final String[] DESCRIPCIONES_TAREAS = {
-            "Preparar café especial", "Limpiar área de mesas", "Revisar inventario",
-            "Preparar postres del día", "Atender clientes", "Organizar almacén",
-            "Preparar bebidas frías", "Limpiar baños", "Reabastecer productos",
-            "Revisar equipos", "Capacitar personal", "Preparar reportes"
-    };
-
-    // Comentarios mejorados por categoría de producto
-    private static final String[] COMENTARIOS_BEBIDAS_CALIENTES = {
-            "Sin azúcar", "Extra azúcar", "Poca espuma", "Doble shot",
-            "Con leche deslactosada", "Con leche de almendra", "Templado",
-            "Bien caliente", "Con canela", "Con chocolate extra"
-    };
-
-    private static final String[] COMENTARIOS_BEBIDAS_FRIAS = {
-            "Con hielo extra", "Sin hielo", "Poco endulzado", "Bien frío",
-            "Con limón extra", "Con menta", "Vaso grande", "Para llevar"
-    };
-
-    private static final String[] COMENTARIOS_COMIDA = {
-            "Sin picante", "Extra queso", "Bien cocido", "Poco sal",
-            "Aderezo aparte", "Sin gluten", "Vegetariano", "Sin lactosa",
-            "Sin cebolla", "Con extra de vegetales", "Para compartir"
-    };
-
-    private static final String[] COMENTARIOS_POSTRES = {
-            "Sin azúcar", "Con helado extra", "Caliente", "Con crema batida",
-            "Para llevar", "Porción grande", "Con fruta fresca", "Sin nueces"
-    };
-
-    private static final String[] COMENTARIOS_PANADERIA = {
-            "Tostado", "Calientito", "Con mantequilla extra", "Con mermelada",
-            "Sin mantequilla", "Integral", "Recién horneado", "Para compartir"
-    };
-
-    public static void ejecutarDemoCompleta() {
-        System.out.println("\n=== DEMOSTRACIÓN DEL SISTEMA ===");
-        System.out.println("Iniciando demostración automática con datos aleatorios...");
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-
-        // 1. Mostrar menú
-        System.out.println("\n1. MOSTRANDO MENÚ DE PRODUCTOS:");
+        // 1. Mostrar el menú usando la clase real
+        System.out.println("\n1. MENU DE CAFETERÍA POWER CAFE");
+        System.out.println("-".repeat(50));
         MenuAlimentos.mostrarMenu();
 
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        // 2. Crear empleados y agregarlos al sistema de gestión
+        System.out.println("\n2. EMPLEADOS REGISTRADOS");
+        System.out.println("-".repeat(50));
+        crearEmpleados();
 
-        // 2. Crear empleados de demostración aleatorios
-        System.out.println("\n2. CREANDO EMPLEADOS DE DEMOSTRACIÓN:");
-        crearEmpleadosDemo();
+        // 3. Crear tareas
+        System.out.println("\n3. TAREAS PROGRAMADAS");
+        System.out.println("-".repeat(50));
+        crearTareas();
 
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-
-        // 3. Crear tareas de demostración aleatorias
-        System.out.println("\n3. CREANDO TAREAS DE DEMOSTRACIÓN:");
-        crearTareasDemo();
-
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-
-        // 4. Simular pedidos en mesas aleatorios
-        System.out.println("\n4. SIMULANDO PEDIDOS EN MESAS:");
-        simularPedidosMesas();
-
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-
-        // 5. Mostrar estadísticas aleatorias
-        System.out.println("\n5. MOSTRANDO ESTADÍSTICAS DE DEMOSTRACIÓN:");
-        mostrarEstadisticasDemo();
-
-        System.out.println("\n=== DEMOSTRACIÓN COMPLETADA ===");
+        // 4. Generar tickets usando la clase Ticket real
+        System.out.println("\n4. TICKETS GENERADOS");
+        System.out.println("-".repeat(50));
+        generarTickets();
     }
 
-    private static String obtenerComentarioApropiado(MenuAlimentos.ProductoMenu producto) {
-        String nombre = producto.nombre.toLowerCase();
-        String categoria = producto.categoria.toLowerCase();
+    private static void crearEmpleados() {
+        String[] nombres = {"María González", "Carlos Rodríguez", "Ana Martínez", "Pedro López",
+                "Laura Hernández", "Jorge Díaz", "Sofía Pérez", "Miguel Castro"};
+        String[] departamentos = {"Cocina", "Limpieza", "Barista"}; // Solo estos departamentos
 
-        if (categoria.contains("bebidas calientes") || nombre.contains("café") ||
-                nombre.contains("cappuccino") || nombre.contains("latte") || nombre.contains("mocha") ||
-                nombre.contains("chocolate caliente") || nombre.contains("té")) {
-            return COMENTARIOS_BEBIDAS_CALIENTES[random.nextInt(COMENTARIOS_BEBIDAS_CALIENTES.length)];
+        // Crear 4 empleados y agregarlos al sistema de gestión
+        for (int i = 0; i < 4; i++) {
+            String nombre = nombres[random.nextInt(nombres.length)];
+            String departamento = departamentos[random.nextInt(departamentos.length)];
+            double salario = 10000 + (random.nextInt(6000) / 100.0) * 100; // $10,000 - $16,000
+
+            // Crear empleado con ID único (1000 + i para evitar conflictos)
+            int id = 1000 + i;
+            GestionEmpleados.Empleado nuevoEmpleado = new GestionEmpleados.Empleado(id, nombre, departamento, salario);
+
+            // Agregar al árbol de empleados del sistema (solo si no existe)
+            GestionEmpleados.agregarEmpleadoDemo(nuevoEmpleado);
+
+            System.out.printf("• %s - %s - $%,.2f (ID: %d)\n", nombre, departamento, salario, id);
         }
-        else if (categoria.contains("bebidas frías") || nombre.contains("limonada") ||
-                nombre.contains("jugo") || nombre.contains("refresco") || nombre.contains("granita")) {
-            return COMENTARIOS_BEBIDAS_FRIAS[random.nextInt(COMENTARIOS_BEBIDAS_FRIAS.length)];
-        }
-        else if (categoria.contains("postres") || nombre.contains("tiramisu") ||
-                nombre.contains("panna cotta") || nombre.contains("cannolo") || nombre.contains("gelato")) {
-            return COMENTARIOS_POSTRES[random.nextInt(COMENTARIOS_POSTRES.length)];
-        }
-        else if (nombre.contains("panini") || nombre.contains("focaccia") ||
-                nombre.contains("bruschetta") || nombre.contains("ensalada")) {
-            return COMENTARIOS_COMIDA[random.nextInt(COMENTARIOS_COMIDA.length)];
-        }
-        else if (nombre.contains("croissant") || nombre.contains("biscotti")) {
-            return COMENTARIOS_PANADERIA[random.nextInt(COMENTARIOS_PANADERIA.length)];
-        }
-        else {
-            // Comentario genérico si no coincide con ninguna categoría específica
-            String[] todosComentarios = {
-                    "Para llevar", "Servir rápido", "Por favor empaquetar", "Sin modificaciones"
-            };
-            return todosComentarios[random.nextInt(todosComentarios.length)];
+        System.out.println("✓ Empleados agregados al sistema de gestión");
+    }
+
+    private static void crearTareas() {
+        String[] tareas = {
+                "Limpieza general del local", "Preparar ingredientes del día",
+                "Atender capacitación de baristas", "Revisar inventario",
+                "Preparar promociones del día", "Atención a clientes especiales",
+                "Revisar equipos de cocina", "Organizar almacén"
+        };
+
+        // Crear 5 tareas (sin prioridades)
+        for (int i = 0; i < 5; i++) {
+            String tarea = tareas[random.nextInt(tareas.length)];
+            int tiempo = 30 + random.nextInt(180); // 30-210 minutos
+
+            System.out.printf("• %s - %d min\n", tarea, tiempo);
         }
     }
 
-    private static void crearEmpleadosDemo() {
-        try {
-            // Limpiar empleados existentes
-            java.lang.reflect.Field raizField = GestionEmpleados.class.getDeclaredField("raiz");
-            raizField.setAccessible(true);
-            raizField.set(null, null);
+    private static void generarTickets() {
+        // Comentarios lógicos según el tipo de producto
+        String[] comentariosBebidasCalientes = {
+                "Extra caliente", "Sin azúcar", "Poca espuma", "Con leche deslactosada",
+                "Doble shot", "Con canela", "Templado"
+        };
 
-            // Crear entre 3 y 6 empleados aleatorios
-            int cantidadEmpleados = random.nextInt(4) + 3; // 3-6 empleados
+        String[] comentariosBebidasFrias = {
+                "Con hielo extra", "Poco hielo", "Sin hielo", "Endulzado ligero",
+                "Con limón extra", "Batido fuerte", "Natural"
+        };
 
-            for (int i = 0; i < cantidadEmpleados; i++) {
-                int id = 100 + i + 1;
-                String nombre = NOMBRES_EMPLEADOS[random.nextInt(NOMBRES_EMPLEADOS.length)];
-                String departamento = DEPARTAMENTOS[random.nextInt(DEPARTAMENTOS.length)];
-                double salario = 8000 + random.nextInt(8000); // $8,000 - $15,999
+        String[] comentariosComida = {
+                "Bien cocido", "Poco cocido", "Sin sal", "Aderezo aparte",
+                "Con extra queso", "Sin picante", "Vegetariano", "Sin gluten"
+        };
 
-                GestionEmpleados.Empleado empleado = new GestionEmpleados.Empleado(id, nombre, departamento, salario);
-                GestionEmpleados.agregarEmpleadoDemo(empleado);
-                System.out.println("✓ Creado: " + nombre + " - " + departamento + " - $" + salario);
+        String[] comentariosPostres = {
+                "Para compartir", "Con extra crema", "Sin azúcar", "Caliente",
+                "Frío", "Con salsa de chocolate", "Sin nueces"
+        };
+
+        // Generar 3 tickets
+        for (int i = 0; i < 3; i++) {
+            int numeroMesa = 1 + random.nextInt(10); // Mesa 1-10
+            generarTicket(numeroMesa, comentariosBebidasCalientes, comentariosBebidasFrias,
+                    comentariosComida, comentariosPostres);
+            System.out.println();
+        }
+    }
+
+    private static void generarTicket(int numeroMesa, String[] comentariosCalientes,
+                                      String[] comentariosFrios, String[] comentariosComida,
+                                      String[] comentariosPostres) {
+        // Crear un ticket real usando la clase del sistema
+        MenuAlimentos.Ticket ticket = new MenuAlimentos.Ticket(numeroMesa);
+
+        // Agregar 3-5 productos al ticket
+        int cantidadProductos = 3 + random.nextInt(3); // 3-5 productos
+        int totalProductos = MenuAlimentos.obtenerCantidadProductos();
+
+        for (int i = 0; i < cantidadProductos; i++) {
+            int idProducto = 1 + random.nextInt(totalProductos);
+            MenuAlimentos.ProductoMenu producto = MenuAlimentos.buscarProductoPorID(idProducto);
+
+            if (producto != null) {
+                int cantidad = 1 + random.nextInt(3); // 1-3 unidades
+                String comentario = obtenerComentarioAleatorio(producto, comentariosCalientes,
+                        comentariosFrios, comentariosComida, comentariosPostres);
+
+                MenuAlimentos.PedidoMesa pedido = new MenuAlimentos.PedidoMesa(producto, comentario, cantidad);
+                ticket.agregarPedido(pedido);
             }
-
-            // Mostrar empleados
-            System.out.println("\nEmpleados registrados:");
-            GestionEmpleados.mostrarEmpleadosDemo();
-
-        } catch (Exception e) {
-            System.out.println("Error en demo de empleados: " + e.getMessage());
         }
+
+        // Mostrar el ticket usando el método real
+        ticket.mostrarTicket();
+
+        // GUARDAR EL TICKET EN ARCHIVO (NUEVO)
+        guardarTicketDemoArchivo(ticket);
     }
 
-    private static void crearTareasDemo() {
-        try {
-            // Limpiar tareas existentes
-            java.lang.reflect.Field contadorField = GestionEmpleados.class.getDeclaredField("contadorTareas");
-            contadorField.setAccessible(true);
-            contadorField.setInt(null, 0);
+    // MÉTODO NUEVO PARA GUARDAR TICKETS DE LA DEMO
+    private static void guardarTicketDemoArchivo(MenuAlimentos.Ticket ticket) {
+        // Formato de fecha para archivo: 26-SEP-2025 (sin / para evitar problemas)
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MMM-yyyy", Locale.ENGLISH);
+        String fecha = LocalDate.now().format(formatter).toUpperCase();
+        String nombreArchivo = "Tickets_" + fecha + ".txt";
 
-            // Crear entre 4 y 8 tareas aleatorias
-            int cantidadTareas = random.nextInt(5) + 4; // 4-8 tareas
+        try (FileWriter fw = new FileWriter(nombreArchivo, true);
+             PrintWriter pw = new PrintWriter(fw)) {
 
-            for (int i = 0; i < cantidadTareas; i++) {
-                String descripcion = DESCRIPCIONES_TAREAS[random.nextInt(DESCRIPCIONES_TAREAS.length)];
-                int prioridad = random.nextInt(5) + 1; // 1-5
-                int duracion = (random.nextInt(6) + 1) * 10; // 10, 20, ..., 60 minutos
-                String empleado = NOMBRES_EMPLEADOS[random.nextInt(NOMBRES_EMPLEADOS.length)];
+            // Formato de hora para mostrar: 26/SEP/2025 14:30
+            DateTimeFormatter horaFormatter = DateTimeFormatter.ofPattern("dd/MMM/yyyy HH:mm", Locale.ENGLISH);
+            String horario = java.time.LocalDateTime.now().format(horaFormatter).toUpperCase();
 
-                GestionEmpleados.TareaEmpleado tarea = new GestionEmpleados.TareaEmpleado(
-                        descripcion, prioridad, duracion, empleado);
-                GestionEmpleados.agregarTareaDemo(tarea);
-                System.out.println("✓ Tarea: " + descripcion + " - " + empleado + " - " + duracion + "min");
-            }
+            pw.println("╔══════════════════════════════════════════════════════╗");
+            pw.println("║                   TICKET MESA " + String.format("%-25s", ticket.getNumeroMesa()) + "║");
+            pw.println("╠══════════════════════════════════════════════════════╣");
+            pw.println("║ Fecha: " + String.format("%-47s", horario) + "║");
+            pw.println("╠══════════════════════════════════════════════════════╣");
+            pw.println("║   Cant. Producto                           Precio   ║");
+            pw.println("╠══════════════════════════════════════════════════════╣");
 
-            // Mostrar tiempo total
-            int tiempoTotal = GestionEmpleados.calcularTiempoTotalTareas();
-            System.out.println("Tiempo total de tareas: " + tiempoTotal + " minutos");
+            double totalProcesados = 0.0;
+            double totalCancelados = 0.0;
 
-        } catch (Exception e) {
-            System.out.println("Error en demo de tareas: " + e.getMessage());
-        }
-    }
+            for (MenuAlimentos.PedidoMesa pedido : ticket.getPedidos()) {
+                String nombreProducto = pedido.producto.nombre;
+                if (nombreProducto.length() > 30) {
+                    nombreProducto = nombreProducto.substring(0, 30) + "...";
+                }
 
-    private static void simularPedidosMesas() {
-        try {
-            // Simular entre 2 y 4 mesas aleatorias
-            int cantidadMesas = random.nextInt(3) + 2; // 2-4 mesas
+                // Determinar estado y si contribuye al total
+                boolean esCancelado = pedido.comentarios != null && pedido.comentarios.contains("CANCELADO");
+                String estado = esCancelado ? "✗ CANCELADO" : "✓ PROCESADO";
+                double subtotal = pedido.getSubtotal();
 
-            for (int mesaNum = 1; mesaNum <= cantidadMesas; mesaNum++) {
-                System.out.println("\n--- Mesa " + mesaNum + " ---");
-                GestionMesas.Mesa mesa = new GestionMesas.Mesa(mesaNum);
+                if (esCancelado) {
+                    totalCancelados += subtotal;
+                } else {
+                    totalProcesados += subtotal;
+                }
 
-                // Crear entre 2 y 5 pedidos por mesa
-                int cantidadPedidos = random.nextInt(4) + 2; // 2-5 pedidos
-                double totalMesa = 0;
+                String lineaProducto = String.format("║   %-5d %-35s $%7.2f   ║",
+                        pedido.cantidad, nombreProducto, subtotal);
+                pw.println(lineaProducto);
+                pw.println("║        Estado: " + String.format("%-37s", estado) + "║");
 
-                for (int i = 0; i < cantidadPedidos; i++) {
-                    int productoId = random.nextInt(MenuAlimentos.obtenerCantidadProductos()) + 1;
-                    MenuAlimentos.ProductoMenu producto = MenuAlimentos.obtenerProducto(productoId);
-
-                    if (producto != null) {
-                        int cantidad = random.nextInt(3) + 1; // 1-3 unidades
-                        String comentario = obtenerComentarioApropiado(producto);
-
-                        MenuAlimentos.PedidoMesa pedido = new MenuAlimentos.PedidoMesa(producto, comentario, cantidad);
-                        mesa.agregarPedido(pedido);
-
-                        double subtotal = pedido.getSubtotal();
-                        totalMesa += subtotal;
-
-                        System.out.println("✓ Pedido: " + producto.nombre + " x" + cantidad +
-                                " - $" + subtotal + " - " + comentario);
+                if (pedido.comentarios != null && !pedido.comentarios.trim().isEmpty() &&
+                        !pedido.comentarios.equals("Sin comentarios") && !pedido.comentarios.contains("CANCELADO")) {
+                    String comentario = pedido.comentarios;
+                    if (comentario.length() > 42) {
+                        comentario = comentario.substring(0, 42) + "...";
                     }
+                    pw.println("║        Comentarios: " + String.format("%-37s", comentario) + "║");
                 }
-
-                // Procesar algunos pedidos aleatoriamente
-                int pedidosAProcesar = random.nextInt(cantidadPedidos / 2 + 1) + 1;
-                for (int i = 0; i < pedidosAProcesar; i++) {
-                    mesa.procesarPedido();
-                }
-
-                System.out.println("✓ " + pedidosAProcesar + " pedidos procesados");
-                System.out.println("Total mesa " + mesaNum + ": $" + String.format("%.2f", totalMesa));
-
-                // GENERAR TICKET PARA LA MESA
-                System.out.println("\n=== TICKET MESA " + mesaNum + " ===");
-                MenuAlimentos.Ticket ticket = mesa.generarTicket();
-                ticket.mostrarTicket();
-
-                // Registrar venta en estadísticas
-                int horaActual = java.time.LocalDateTime.now().getHour();
-                int totalPedidosTicket = ticket.getCantidadPedidos();
-                double totalVentasTicket = ticket.calcularTotal();
-
-                EstadisticasVentas.registrarVenta(horaActual, totalPedidosTicket, totalVentasTicket);
-                System.out.println("✓ Venta registrada en estadísticas: " + totalPedidosTicket + " pedidos, $" + totalVentasTicket);
+                pw.println("║                                                    ║");
             }
 
-        } catch (Exception e) {
-            System.out.println("Error en demo de mesas: " + e.getMessage());
+            pw.println("╠══════════════════════════════════════════════════════╣");
+            pw.printf ("║        SUBTOTAL PROCESADOS:              $%10.2f   ║%n", totalProcesados);
+            if (totalCancelados > 0) {
+                pw.printf ("║        PEDIDOS CANCELADOS:               $%10.2f   ║%n", totalCancelados);
+            }
+            pw.printf ("║        TOTAL:                             $%10.2f   ║%n", totalProcesados);
+            pw.println("╚══════════════════════════════════════════════════════╝");
+            pw.println();
+
+            System.out.println("✓ Ticket guardado en: " + nombreArchivo);
+
+        } catch (IOException e) {
+            System.out.println("Error al guardar ticket de demo: " + e.getMessage());
+            // Intentar crear el directorio si no existe
+            java.io.File archivo = new java.io.File(nombreArchivo);
+            try {
+                archivo.getParentFile().mkdirs(); // Crear directorios padres si no existen
+                System.out.println("Directorios creados, intentando guardar nuevamente...");
+                guardarTicketDemoArchivo(ticket); // Reintentar
+            } catch (Exception ex) {
+                System.out.println("Error crítico al guardar ticket de demo: " + ex.getMessage());
+            }
         }
     }
 
-    private static void mostrarEstadisticasDemo() {
-        try {
-            // Mostrar resumen de ventas registradas
-            java.lang.reflect.Method resumenMethod = EstadisticasVentas.class.getDeclaredMethod("mostrarResumenVentas");
-            resumenMethod.setAccessible(true);
-            resumenMethod.invoke(null);
+    private static String obtenerComentarioAleatorio(MenuAlimentos.ProductoMenu producto,
+                                                     String[] comentariosCalientes,
+                                                     String[] comentariosFrios,
+                                                     String[] comentariosComida,
+                                                     String[] comentariosPostres) {
+        String nombre = producto.nombre.toLowerCase();
 
-            // Calcular total recursivo
-            System.out.println("\nCálculo recursivo del total:");
-            java.lang.reflect.Method totalMethod = EstadisticasVentas.class.getDeclaredMethod("calcularVentaTotalRecursivo");
-            totalMethod.setAccessible(true);
-            totalMethod.invoke(null);
-
-        } catch (Exception e) {
-            System.out.println("Error en demo de estadísticas: " + e.getMessage());
+        if (nombre.contains("café") || nombre.contains("té") || nombre.contains("capuccino") ||
+                nombre.contains("latte") || nombre.contains("chocolate caliente")) {
+            return comentariosCalientes[random.nextInt(comentariosCalientes.length)];
+        } else if (nombre.contains("frappé") || nombre.contains("smoothie") ||
+                nombre.contains("limonada") || nombre.contains("refresco")) {
+            return comentariosFrios[random.nextInt(comentariosFrios.length)];
+        } else if (nombre.contains("sandwich") || nombre.contains("bagel") ||
+                nombre.contains("ensalada") || nombre.contains("sopa")) {
+            return comentariosComida[random.nextInt(comentariosComida.length)];
+        } else if (nombre.contains("pastel") || nombre.contains("galleta") ||
+                nombre.contains("muffin") || nombre.contains("postre")) {
+            return comentariosPostres[random.nextInt(comentariosPostres.length)];
         }
+
+        return ""; // Sin comentario
     }
 }
