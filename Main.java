@@ -4,21 +4,25 @@ public class Main {
     private static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
-
+        // Cargar menú primero
         MenuAlimentos.cargarMenuDesdeCSV();
+
+        // Inicializar empleados de demostración
+        inicializarEmpleadosDemo();
 
         int opcion;
         do {
-            System.out.println("\n== SISTEMA DE GESTIÓN DE CAFETERÍA ==");
+            System.out.println("\nSISTEMA DE GESTIÓN DE CAFETERÍA POWER CAFE");
             System.out.println("1. Gestión de Mesas");
             System.out.println("2. Gestión de Productos del Menú");
             System.out.println("3. Gestión de Tareas (Cola de Prioridades)");
             System.out.println("4. Gestión de Empleados (Árbol Binario)");
             System.out.println("5. Análisis de Ventas");
-            System.out.println("6. Salir");
+            System.out.println("6. Demostración del Sistema");
+            System.out.println("7. Salir");
             System.out.print("Seleccione una opción: ");
 
-            opcion = obtenerEnteroEnRango(1, 6, "Seleccione una opción válida (1-6): ");
+            opcion = obtenerEnteroEnRango(1, 7, "Seleccione una opción válida (1-7): ");
 
             switch (opcion) {
                 case 1:
@@ -37,14 +41,37 @@ public class Main {
                     gestionarEstadisticasVentas();
                     break;
                 case 6:
-                    System.out.println("¡Gracias por usar el sistema! ¡Hasta pronto!");
+                    ejecutarDemo();
+                    break;
+                case 7:
+                    System.out.println("\n¡Gracias por usar el sistema! ¡Hasta pronto! 👋");
                     break;
             }
-        } while (opcion != 6);
+        } while (opcion != 7);
 
         scanner.close();
     }
 
+    private static void inicializarEmpleadosDemo() {
+        // Crear empleados de demostración con datos aleatorios
+        String[] nombres = {"María González", "Carlos Rodríguez", "Ana Martínez", "Pedro López",
+                "Laura Hernández", "Jorge Díaz", "Sofía Pérez", "Miguel Castro"};
+        String[] departamentos = {"Cocina", "Limpieza", "Barista"};
+
+        java.util.Random random = new java.util.Random();
+
+        for (int i = 0; i < 4; i++) {
+            String nombre = nombres[random.nextInt(nombres.length)];
+            String departamento = departamentos[random.nextInt(departamentos.length)];
+            double salario = 10000 + (random.nextInt(6000) / 100.0) * 100;
+
+            int id = 1000 + i;
+            GestionEmpleados.Empleado nuevoEmpleado = new GestionEmpleados.Empleado(id, nombre, departamento, salario);
+            GestionEmpleados.agregarEmpleadoDemo(nuevoEmpleado);
+        }
+    }
+
+    // Los demás métodos permanecen exactamente igual...
     private static int obtenerEnteroEnRango(int min, int max, String mensajeError) {
         while (true) {
             try {
@@ -82,7 +109,7 @@ public class Main {
         int opcion;
         do {
             System.out.println("\n== GESTIÓN DE PRODUCTOS DEL MENÚ ==");
-            System.out.println("1. Mostrar menú completo (Interfaz Gráfica)");
+            System.out.println("1. Mostrar menú completo");
             System.out.println("2. Buscar producto por ID");
             System.out.println("3. Buscar producto por nombre");
             System.out.println("4. Realizar pedido en mesa");
@@ -93,7 +120,7 @@ public class Main {
 
             switch (opcion) {
                 case 1:
-                    mostrarMenuCompletoGUI();
+                    MenuAlimentos.mostrarMenu();
                     break;
                 case 2:
                     buscarProductoPorID();
@@ -109,11 +136,6 @@ public class Main {
                     break;
             }
         } while (opcion != 8);
-    }
-
-    private static void mostrarMenuCompletoGUI() {
-        System.out.println("Abriendo interfaz gráfica del menú...");
-        MenuInt.mostrarMenuGUI();
     }
 
     private static void buscarProductoPorID() {
@@ -203,5 +225,13 @@ public class Main {
 
     private static void gestionarEstadisticasVentas() {
         EstadisticasVentas.menuEstadisticas();
+    }
+
+    private static void ejecutarDemo() {
+        DemoCafeteria.ejecutarDemo();
+
+        // Pausa para que el usuario pueda ver los resultados
+        System.out.print("\nPresione Enter para continuar...");
+        scanner.nextLine();
     }
 }
