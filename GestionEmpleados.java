@@ -29,6 +29,11 @@ public class GestionEmpleados {
     private static TareaEmpleado[] tareas = new TareaEmpleado[100];
     private static int contadorTareas = 0;
 
+    // Método público para agregar empleados desde la demo (MANTENER PÚBLICO)
+    public static void agregarEmpleadoDemo(Empleado empleado) {
+        raiz = insertarRecursivo(raiz, empleado);
+    }
+
     // Métodos de validación robustos
     private static int obtenerEnteroValido(String mensaje) {
         while (true) {
@@ -174,16 +179,40 @@ public class GestionEmpleados {
             return;
         }
 
-        System.out.println("Empleados (ordenados por ID):");
+        System.out.println("\n=== LISTA DE EMPLEADOS (ORDENADOS POR ID) ===");
+        System.out.println("╔══════╦══════════════════════════════════════════════════════════════════════╗");
+        System.out.println("║  ID  ║                          INFORMACIÓN DEL EMPLEADO                    ║");
+        System.out.println("╠══════╬══════════════════════════════════════════════════════════════════════╣");
+
         inordenRecursivo(raiz);
+
+        System.out.println("╚══════╩══════════════════════════════════════════════════════════════════════╝");
+
+        // Mostrar estadísticas
+        int totalEmpleados = contarEmpleadosRecursivo(raiz, 0);
+        double nominaTotal = calcularNominaRecursivo(raiz, 0.0);
+        System.out.printf("\nTotal de empleados: %d | Nómina total mensual: $%,.2f\n", totalEmpleados, nominaTotal);
     }
 
     private static void inordenRecursivo(NodoArbolEmpleados nodo) {
         if (nodo != null) {
             inordenRecursivo(nodo.izquierdo);
-            System.out.println(nodo.empleado);
+            System.out.printf("║ %4d ║ %-72s ║\n",
+                    nodo.empleado.id,
+                    String.format("%s | %s | Salario: $%,.2f",
+                            nodo.empleado.nombre,
+                            nodo.empleado.departamento,
+                            nodo.empleado.salario));
             inordenRecursivo(nodo.derecho);
         }
+    }
+
+    private static int contarEmpleadosRecursivo(NodoArbolEmpleados nodo, int contador) {
+        if (nodo == null) return contador;
+
+        int conIzquierdo = contarEmpleadosRecursivo(nodo.izquierdo, contador);
+        int conActual = conIzquierdo + 1;
+        return contarEmpleadosRecursivo(nodo.derecho, conActual);
     }
 
     private static void buscarEmpleado() {
@@ -191,18 +220,17 @@ public class GestionEmpleados {
 
         Empleado resultado = buscarRecursivo(raiz, id);
         if (resultado != null) {
-            System.out.println("✓ Empleado encontrado: " + resultado);
+            System.out.println("╔══════════════════════════════════════════════════════════════════════╗");
+            System.out.println("║                         EMPLEADO ENCONTRADO                          ║");
+            System.out.println("╠══════════════════════════════════════════════════════════════════════╣");
+            System.out.printf("║ ID: %-70d ║\n", resultado.id);
+            System.out.printf("║ Nombre: %-65s ║\n", resultado.nombre);
+            System.out.printf("║ Departamento: %-60s ║\n", resultado.departamento);
+            System.out.printf("║ Salario: $%-64.2f ║\n", resultado.salario);
+            System.out.println("╚══════════════════════════════════════════════════════════════════════╝");
         } else {
             System.out.println("Empleado no encontrado.");
         }
-    }
-
-    private static Empleado buscarRecursivo(NodoArbolEmpleados nodo, int id) {
-        if (nodo == null) return null;
-
-        if (id == nodo.empleado.id) return nodo.empleado;
-        if (id < nodo.empleado.id) return buscarRecursivo(nodo.izquierdo, id);
-        return buscarRecursivo(nodo.derecho, id);
     }
 
     private static void calcularNominaTotal() {
@@ -212,7 +240,11 @@ public class GestionEmpleados {
         }
 
         double total = calcularNominaRecursivo(raiz, 0.0);
-        System.out.println("Nómina total mensual: $" + String.format("%.2f", total));
+        System.out.println("╔══════════════════════════════════════════════════════════════════════╗");
+        System.out.println("║                         NÓMINA TOTAL MENSUAL                         ║");
+        System.out.println("╠══════════════════════════════════════════════════════════════════════╣");
+        System.out.printf("║ Total: $%,-67.2f ║\n", total);
+        System.out.println("╚══════════════════════════════════════════════════════════════════════╝");
     }
 
     private static double calcularNominaRecursivo(NodoArbolEmpleados nodo, double acumulado) {
@@ -397,6 +429,18 @@ public class GestionEmpleados {
         return encontrarMinimo(nodo.izquierdo);
     }
 
+    private static Empleado buscarRecursivo(NodoArbolEmpleados nodo, int id) {
+        if (nodo == null) return null;
+
+        if (id == nodo.empleado.id) {
+            return nodo.empleado;
+        } else if (id < nodo.empleado.id) {
+            return buscarRecursivo(nodo.izquierdo, id);
+        } else {
+            return buscarRecursivo(nodo.derecho, id);
+        }
+    }
+
     static class NodoArbolEmpleados {
         Empleado empleado;
         NodoArbolEmpleados izquierdo;
@@ -429,3 +473,4 @@ public class GestionEmpleados {
         }
     }
 }
+
