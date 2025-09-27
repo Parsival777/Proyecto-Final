@@ -305,7 +305,7 @@ public class MenuAlimentos {
         public double calcularTotal() {
             double total = 0;
             for (PedidoMesa pedido : pedidos) {
-                // Solo sumar pedidos que no estén cancelados
+                
                 if (pedido.comentarios == null || !pedido.comentarios.contains("CANCELADO")) {
                     total += pedido.getSubtotal();
                 }
@@ -314,7 +314,7 @@ public class MenuAlimentos {
         }
 
         public void mostrarTicket() {
-            // Formato de fecha: 26/SEP/2025 14:30
+            
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MMM/yyyy HH:mm", Locale.ENGLISH);
             String horario = LocalDateTime.now().format(formatter).toUpperCase();
 
@@ -335,7 +335,7 @@ public class MenuAlimentos {
                     nombreProducto = nombreProducto.substring(0, 30) + "...";
                 }
 
-                // Determinar si el pedido está cancelado
+                
                 boolean esCancelado = pedido.comentarios != null && pedido.comentarios.contains("CANCELADO");
                 String estado = esCancelado ? "✗ CANCELADO" : "✓ PROCESADO";
                 double subtotal = pedido.getSubtotal();
