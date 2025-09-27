@@ -243,7 +243,7 @@ public class GestionEmpleados {
         System.out.println("╔══════════════════════════════════════════════════════════════════════╗");
         System.out.println("║                         NÓMINA TOTAL MENSUAL                         ║");
         System.out.println("╠══════════════════════════════════════════════════════════════════════╣");
-        System.out.printf("║ Total: $%,-67.2f ║\n", total);
+        System.out.printf("║ Total: $%,-61.2f║\n", total);
         System.out.println("╚══════════════════════════════════════════════════════════════════════╝");
     }
 
