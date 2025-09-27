@@ -85,7 +85,7 @@ public class EstadisticasVentas {
 
         if (archivosDir != null) {
             for (File archivo : archivosDir) {
-                // Buscar archivos con el nuevo formato: Tickets_26-SEP-2025.txt
+                
                 if (archivo.isFile() && archivo.getName().startsWith("Tickets_") && archivo.getName().endsWith(".txt")) {
                     archivos.add(archivo);
                     System.out.println("✓ Archivo encontrado: " + archivo.getName());
@@ -110,7 +110,7 @@ public class EstadisticasVentas {
             return tickets;
         }
 
-        // Buscar el archivo de hoy (formato: Tickets_26-SEP-2025.txt)
+        
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MMM-yyyy", Locale.ENGLISH);
         String fechaHoy = LocalDate.now().format(formatter).toUpperCase();
         String nombreArchivoHoy = "Tickets_" + fechaHoy + ".txt";
@@ -125,7 +125,7 @@ public class EstadisticasVentas {
 
         if (archivoHoy == null) {
             System.out.println("No se encontró el archivo de tickets de hoy: " + nombreArchivoHoy);
-            // Usar el más reciente como fallback
+            
             archivoHoy = archivos.get(archivos.size() - 1);
             System.out.println("Usando archivo más reciente: " + archivoHoy.getName());
         }
@@ -141,7 +141,7 @@ public class EstadisticasVentas {
 
             while ((linea = br.readLine()) != null) {
                 if (linea.contains("TICKET MESA")) {
-                    // Si ya estábamos leyendo un ticket, guardarlo
+                    
                     if (numeroMesa != -1) {
                         tickets.add(new TicketData(numeroMesa, fecha, cantidadPedidos, total));
                         cantidadPedidos = 0;
@@ -164,7 +164,7 @@ public class EstadisticasVentas {
                     lineasProductos.clear();
                 } else if (linea.contains("TOTAL:")) {
                     leyendoProductos = false;
-                    // Extraer el total de la línea del TOTAL (solo procesados)
+                    
                     String totalStr = linea.replaceAll("[^0-9.]", "").trim();
                     if (!totalStr.isEmpty()) {
                         try {
@@ -174,30 +174,30 @@ public class EstadisticasVentas {
                         }
                     }
 
-                    // Contar productos individuales de este ticket (solo los procesados)
+                    
                     for (String lineaProducto : lineasProductos) {
                         if (lineaProducto.contains("$") && !lineaProducto.contains("Comentarios:") && !lineaProducto.contains("Estado:")) {
-                            // Verificar si el pedido fue cancelado - NO contar cancelados
+                            
                             if (!lineaProducto.contains("CANCELADO")) {
-                                // Extraer la cantidad de la línea del producto
+                                
                                 try {
                                     String cantidadStr = lineaProducto.split("║")[1].trim().split("\\s+")[0];
                                     int cantidad = Integer.parseInt(cantidadStr);
                                     cantidadPedidos += cantidad;
                                 } catch (Exception e) {
-                                    // Si no se puede parsear, contar como 1 pedido
+                                    
                                     cantidadPedidos++;
                                 }
                             }
                         }
                     }
 
-                    // Guardar ticket solo si tiene pedidos procesados
+                    
                     if (numeroMesa != -1 && total > 0) {
                         tickets.add(new TicketData(numeroMesa, fecha, cantidadPedidos, total));
                     }
 
-                    // Resetear para próximo ticket
+                    
                     numeroMesa = -1;
                     cantidadPedidos = 0;
                     total = 0.0;
@@ -207,7 +207,7 @@ public class EstadisticasVentas {
                 }
             }
 
-            // Guardar el último ticket si existe
+            
             if (numeroMesa != -1 && total > 0) {
                 tickets.add(new TicketData(numeroMesa, fecha, cantidadPedidos, total));
             }
@@ -397,10 +397,10 @@ public class EstadisticasVentas {
         System.out.println("\n=== ANÁLISIS DE TENDENCIAS (PRODUCTOS MÁS PEDIDOS) ===");
         List<Map.Entry<String, Integer>> listaProductos = new ArrayList<>(productosMasPedidos.entrySet());
 
-        // Ordenar por cantidad (Divide y Vencerás - Quicksort)
+        
         quicksortProductosRecursivo(listaProductos, 0, listaProductos.size() - 1);
 
-        // Mostrar top 10 productos más pedidos en formato de tabla
+        
         System.out.println("╔══════════════════════════════════════════════════════════════╗");
         System.out.println("║                 PRODUCTOS MÁS PEDIDOS                        ║");
         System.out.println("╠══════╦══════════════════════════════════════╦════════════════╣");
@@ -434,9 +434,9 @@ public class EstadisticasVentas {
 
                     if (enSeccionProductos && linea.contains("║") && !linea.contains("Comentarios:") &&
                             !linea.contains("Estado:") && !linea.contains("════")) {
-                        // Solo contar pedidos procesados (no cancelados)
+                        
                         if (!linea.contains("CANCELADO")) {
-                            // Extraer nombre del producto y cantidad
+                            
                             try {
                                 String contenido = linea.replaceAll("║", "").trim();
                                 String[] partes = contenido.split("\\s+", 3);
@@ -450,7 +450,7 @@ public class EstadisticasVentas {
                                     }
                                 }
                             } catch (Exception e) {
-                                // Ignorar líneas que no se pueden parsear
+                                
                             }
                         }
                     }
@@ -508,7 +508,7 @@ public class EstadisticasVentas {
     static class TicketData {
         int numeroMesa;
         String fecha;
-        int cantidadPedidos; // Ahora representa la cantidad total de pedidos individuales procesados
+        int cantidadPedidos; 
         double total;
 
         public TicketData(int numeroMesa, String fecha, int cantidadPedidos, double total) {
