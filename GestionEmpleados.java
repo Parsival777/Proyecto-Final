@@ -4,11 +4,11 @@ public class GestionEmpleados {
     private static NodoArbolEmpleados raiz = null;
     private static Scanner scanner = new Scanner(System.in);
 
-    // Nueva funcionalidad: Gestión de tareas para empleados
+    
     private static class TareaEmpleado {
         String descripcion;
-        int prioridad; // 1-5, donde 1 es más alta
-        int duracionEstimada; // en minutos
+        int prioridad; 
+        int duracionEstimada; 
         String empleadoAsignado;
 
         public TareaEmpleado(String descripcion, int prioridad, int duracion, String empleado) {
@@ -25,16 +25,16 @@ public class GestionEmpleados {
         }
     }
 
-    // Lista simple de tareas
+    
     private static TareaEmpleado[] tareas = new TareaEmpleado[100];
     private static int contadorTareas = 0;
 
-    // Método público para agregar empleados desde la demo (MANTENER PÚBLICO)
+    
     public static void agregarEmpleadoDemo(Empleado empleado) {
         raiz = insertarRecursivo(raiz, empleado);
     }
 
-    // Métodos de validación robustos
+    
     private static int obtenerEnteroValido(String mensaje) {
         while (true) {
             try {
@@ -188,7 +188,7 @@ public class GestionEmpleados {
 
         System.out.println("╚══════╩══════════════════════════════════════════════════════════════════════╝");
 
-        // Mostrar estadísticas
+        
         int totalEmpleados = contarEmpleadosRecursivo(raiz, 0);
         double nominaTotal = calcularNominaRecursivo(raiz, 0.0);
         System.out.printf("\nTotal de empleados: %d | Nómina total mensual: $%,.2f\n", totalEmpleados, nominaTotal);
@@ -197,9 +197,9 @@ public class GestionEmpleados {
     private static void inordenRecursivo(NodoArbolEmpleados nodo) {
         if (nodo != null) {
             inordenRecursivo(nodo.izquierdo);
-            System.out.printf("║ %4d ║ %-72s ║\n",
+            System.out.printf("║ %4d ║ %-68s ║\n",
                     nodo.empleado.id,
-                    String.format("%s | %s | Salario: $%,.2f",
+                    String.format("%s           | %s        | Salario: $%,.2f",
                             nodo.empleado.nombre,
                             nodo.empleado.departamento,
                             nodo.empleado.salario));
@@ -348,7 +348,7 @@ public class GestionEmpleados {
         return buscarTareasRecursivo(empleado, index + 1, contador);
     }
 
-    // Divide y Vencerás: Distribución equitativa de tareas
+    
     private static void distribuirTareasDivideVenceras() {
         if (contadorTareas == 0) {
             System.out.println("No hay tareas para distribuir.");
@@ -372,13 +372,13 @@ public class GestionEmpleados {
         System.out.printf("  Grupo 1 (tareas %d-%d): %d tareas\n", inicio + 1, medio + 1, medio - inicio + 1);
         System.out.printf("  Grupo 2 (tareas %d-%d): %d tareas\n", medio + 2, fin + 1, fin - medio);
 
-        // Calcular tiempo total de cada grupo
+        
         int tiempoGrupo1 = calcularTiempoGrupo(inicio, medio, 0);
         int tiempoGrupo2 = calcularTiempoGrupo(medio + 1, fin, 0);
 
         System.out.printf("  Tiempo Grupo 1: %d min | Tiempo Grupo 2: %d min\n", tiempoGrupo1, tiempoGrupo2);
 
-        // Dividir recursivamente
+        
         distribuirTareasRecursivo(inicio, medio, nivel + 1);
         distribuirTareasRecursivo(medio + 1, fin, nivel + 1);
     }
@@ -390,7 +390,7 @@ public class GestionEmpleados {
         return calcularTiempoGrupo(inicio + 1, fin, acumulado + tareas[inicio].duracionEstimada);
     }
 
-    // ========== MÉTODOS ORIGINALES DE GESTIÓN DE EMPLEADOS ==========
+    
 
     private static NodoArbolEmpleados insertarRecursivo(NodoArbolEmpleados nodo, Empleado empleado) {
         if (nodo == null) {
