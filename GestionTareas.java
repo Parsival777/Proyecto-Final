@@ -8,7 +8,7 @@ public class GestionTareas {
 
     private static Scanner scanner = new Scanner(System.in);
 
-    // Métodos de validación robustos
+    
     private static int obtenerEnteroValido(String mensaje) {
         while (true) {
             try {
@@ -184,7 +184,7 @@ public class GestionTareas {
         int tiempoTotal = calcularTiempoTotalRecursivo(tareas, 0, 0);
         System.out.println("Tiempo total estimado para " + tareas.length + " tareas pendientes: " + tiempoTotal + " minutos");
 
-        // Calcular tiempo en horas y minutos
+        
         int horas = tiempoTotal / 60;
         int minutos = tiempoTotal % 60;
         if (horas > 0) {
@@ -206,7 +206,7 @@ public class GestionTareas {
         }
 
         System.out.println("\n=== TAREAS POR PRIORIDAD ===");
-        int[] contadorPrioridades = new int[6]; // Índices 1-5 para prioridades
+        int[] contadorPrioridades = new int[6]; 
 
         Tarea[] tareas = colaTareas.toArray(new Tarea[0]);
         contarTareasPorPrioridadRecursivo(tareas, 0, contadorPrioridades);
@@ -215,7 +215,7 @@ public class GestionTareas {
             System.out.println("Prioridad " + i + ": " + contadorPrioridades[i] + " tareas");
         }
 
-        // Mostrar la prioridad con más tareas
+        
         int maxPrioridad = encontrarPrioridadConMasTareas(contadorPrioridades, 1, 1, contadorPrioridades[1]);
         System.out.println("Prioridad con más tareas: " + maxPrioridad + " (" + contadorPrioridades[maxPrioridad] + " tareas)");
     }
@@ -256,7 +256,7 @@ public class GestionTareas {
         System.out.println("✓ Se eliminaron " + cantidad + " tareas de la cola.");
     }
 
-    // Método adicional para obtener estadísticas de la cola
+    
     public static void mostrarEstadisticas() {
         if (colaTareas.isEmpty()) {
             System.out.println("No hay tareas en la cola.");
@@ -270,11 +270,11 @@ public class GestionTareas {
         System.out.println("Total de tareas: " + tareas.length);
         System.out.println("Tiempo total estimado: " + tiempoTotal + " minutos");
 
-        // Encontrar la tarea más larga
+        
         Tarea tareaMasLarga = encontrarTareaMasLargaRecursivo(tareas, 0, tareas[0]);
         System.out.println("Tarea más larga: " + tareaMasLarga.descripcion + " (" + tareaMasLarga.tiempoEstimado + " min)");
 
-        // Encontrar la tarea de mayor prioridad
+        
         Tarea tareaMayorPrioridad = encontrarTareaMayorPrioridadRecursivo(tareas, 0, tareas[0]);
         System.out.println("Tarea de mayor prioridad: " + tareaMayorPrioridad.descripcion + " (Prioridad: " + tareaMayorPrioridad.prioridad + ")");
     }
@@ -323,17 +323,17 @@ public class GestionTareas {
         }
     }
 
-    // Método para obtener la cola de tareas (para integración con otros módulos)
+    
     public static PriorityQueue<Tarea> getColaTareas() {
         return colaTareas;
     }
 
-    // Método para verificar si hay tareas pendientes
+    
     public static boolean hayTareasPendientes() {
         return !colaTareas.isEmpty();
     }
 
-    // Método para obtener la siguiente tarea sin procesarla
+    
     public static Tarea verSiguienteTarea() {
         return colaTareas.peek();
     }
