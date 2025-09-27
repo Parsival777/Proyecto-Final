@@ -14,46 +14,46 @@ public class DemoCafeteria {
         System.out.println("                   DEMOSTRACIÓN DEL SISTEMA DE CAFETERÍA");
         System.out.println("=".repeat(80));
 
-        // Asegurarse de que el menú esté cargado
+        
         MenuAlimentos.cargarMenuDesdeCSV();
 
-        // 1. Mostrar el menú usando la clase real
+        
         System.out.println("\n1. MENU DE CAFETERÍA POWER CAFE");
         System.out.println("-".repeat(50));
         MenuAlimentos.mostrarMenu();
 
-        // 2. Crear empleados y agregarlos al sistema de gestión
+        
         System.out.println("\n2. EMPLEADOS REGISTRADOS");
         System.out.println("-".repeat(50));
         crearEmpleados();
 
-        // 3. Crear tareas
+        
         System.out.println("\n3. TAREAS PROGRAMADAS");
         System.out.println("-".repeat(50));
         crearTareas();
 
-        // 4. Generar tickets usando la clase Ticket real
+        
         System.out.println("\n4. TICKETS GENERADOS");
         System.out.println("-".repeat(50));
         generarTickets();
     }
 
     private static void crearEmpleados() {
-        String[] nombres = {"María González", "Carlos Rodríguez", "Ana Martínez", "Pedro López",
-                "Laura Hernández", "Jorge Díaz", "Sofía Pérez", "Miguel Castro"};
-        String[] departamentos = {"Cocina", "Limpieza", "Barista"}; // Solo estos departamentos
+        String[] nombres = {"Marcos Gutiérrez", "Julieta Cárdenas", "Andrés Cervantes", "Patricia Morales",
+                "Laura Hernández", "Antonio Delgado", "Beatriz Herrera", "Camilo Vázquez"};
+        String[] departamentos = {"Cocina", "Limpieza", "Barista"}; 
 
-        // Crear 4 empleados y agregarlos al sistema de gestión
+        
         for (int i = 0; i < 4; i++) {
             String nombre = nombres[random.nextInt(nombres.length)];
             String departamento = departamentos[random.nextInt(departamentos.length)];
-            double salario = 10000 + (random.nextInt(6000) / 100.0) * 100; // $10,000 - $16,000
+            double salario = 10000 + (random.nextInt(6000) / 100.0) * 100; 
 
-            // Crear empleado con ID único (1000 + i para evitar conflictos)
+            
             int id = 1000 + i;
             GestionEmpleados.Empleado nuevoEmpleado = new GestionEmpleados.Empleado(id, nombre, departamento, salario);
 
-            // Agregar al árbol de empleados del sistema (solo si no existe)
+            
             GestionEmpleados.agregarEmpleadoDemo(nuevoEmpleado);
 
             System.out.printf("• %s - %s - $%,.2f (ID: %d)\n", nombre, departamento, salario, id);
@@ -69,17 +69,17 @@ public class DemoCafeteria {
                 "Revisar equipos de cocina", "Organizar almacén"
         };
 
-        // Crear 5 tareas (sin prioridades)
+        
         for (int i = 0; i < 5; i++) {
             String tarea = tareas[random.nextInt(tareas.length)];
-            int tiempo = 30 + random.nextInt(180); // 30-210 minutos
+            int tiempo = 30 + random.nextInt(180); 
 
             System.out.printf("• %s - %d min\n", tarea, tiempo);
         }
     }
 
     private static void generarTickets() {
-        // Comentarios lógicos según el tipo de producto
+        
         String[] comentariosBebidasCalientes = {
                 "Extra caliente", "Sin azúcar", "Poca espuma", "Con leche deslactosada",
                 "Doble shot", "Con canela", "Templado"
@@ -100,9 +100,9 @@ public class DemoCafeteria {
                 "Frío", "Con salsa de chocolate", "Sin nueces"
         };
 
-        // Generar 3 tickets
+        
         for (int i = 0; i < 3; i++) {
-            int numeroMesa = 1 + random.nextInt(10); // Mesa 1-10
+            int numeroMesa = 1 + random.nextInt(10); 
             generarTicket(numeroMesa, comentariosBebidasCalientes, comentariosBebidasFrias,
                     comentariosComida, comentariosPostres);
             System.out.println();
@@ -112,11 +112,11 @@ public class DemoCafeteria {
     private static void generarTicket(int numeroMesa, String[] comentariosCalientes,
                                       String[] comentariosFrios, String[] comentariosComida,
                                       String[] comentariosPostres) {
-        // Crear un ticket real usando la clase del sistema
+        
         MenuAlimentos.Ticket ticket = new MenuAlimentos.Ticket(numeroMesa);
 
-        // Agregar 3-5 productos al ticket
-        int cantidadProductos = 3 + random.nextInt(3); // 3-5 productos
+        
+        int cantidadProductos = 3 + random.nextInt(3); 
         int totalProductos = MenuAlimentos.obtenerCantidadProductos();
 
         for (int i = 0; i < cantidadProductos; i++) {
@@ -124,7 +124,7 @@ public class DemoCafeteria {
             MenuAlimentos.ProductoMenu producto = MenuAlimentos.buscarProductoPorID(idProducto);
 
             if (producto != null) {
-                int cantidad = 1 + random.nextInt(3); // 1-3 unidades
+                int cantidad = 1 + random.nextInt(3); 
                 String comentario = obtenerComentarioAleatorio(producto, comentariosCalientes,
                         comentariosFrios, comentariosComida, comentariosPostres);
 
@@ -133,16 +133,16 @@ public class DemoCafeteria {
             }
         }
 
-        // Mostrar el ticket usando el método real
+        
         ticket.mostrarTicket();
 
-        // GUARDAR EL TICKET EN ARCHIVO (NUEVO)
+        
         guardarTicketDemoArchivo(ticket);
     }
 
-    // MÉTODO NUEVO PARA GUARDAR TICKETS DE LA DEMO
+    
     private static void guardarTicketDemoArchivo(MenuAlimentos.Ticket ticket) {
-        // Formato de fecha para archivo: 26-SEP-2025 (sin / para evitar problemas)
+        
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MMM-yyyy", Locale.ENGLISH);
         String fecha = LocalDate.now().format(formatter).toUpperCase();
         String nombreArchivo = "Tickets_" + fecha + ".txt";
@@ -150,7 +150,7 @@ public class DemoCafeteria {
         try (FileWriter fw = new FileWriter(nombreArchivo, true);
              PrintWriter pw = new PrintWriter(fw)) {
 
-            // Formato de hora para mostrar: 26/SEP/2025 14:30
+            
             DateTimeFormatter horaFormatter = DateTimeFormatter.ofPattern("dd/MMM/yyyy HH:mm", Locale.ENGLISH);
             String horario = java.time.LocalDateTime.now().format(horaFormatter).toUpperCase();
 
@@ -171,7 +171,7 @@ public class DemoCafeteria {
                     nombreProducto = nombreProducto.substring(0, 30) + "...";
                 }
 
-                // Determinar estado y si contribuye al total
+                
                 boolean esCancelado = pedido.comentarios != null && pedido.comentarios.contains("CANCELADO");
                 String estado = esCancelado ? "✗ CANCELADO" : "✓ PROCESADO";
                 double subtotal = pedido.getSubtotal();
@@ -211,12 +211,12 @@ public class DemoCafeteria {
 
         } catch (IOException e) {
             System.out.println("Error al guardar ticket de demo: " + e.getMessage());
-            // Intentar crear el directorio si no existe
+            
             java.io.File archivo = new java.io.File(nombreArchivo);
             try {
-                archivo.getParentFile().mkdirs(); // Crear directorios padres si no existen
+                archivo.getParentFile().mkdirs(); 
                 System.out.println("Directorios creados, intentando guardar nuevamente...");
-                guardarTicketDemoArchivo(ticket); // Reintentar
+                guardarTicketDemoArchivo(ticket); 
             } catch (Exception ex) {
                 System.out.println("Error crítico al guardar ticket de demo: " + ex.getMessage());
             }
@@ -244,6 +244,6 @@ public class DemoCafeteria {
             return comentariosPostres[random.nextInt(comentariosPostres.length)];
         }
 
-        return ""; // Sin comentario
+        return ""; 
     }
 }
