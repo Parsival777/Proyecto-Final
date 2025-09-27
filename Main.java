@@ -4,10 +4,10 @@ public class Main {
     private static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
-        // Cargar menú primero
+        
         MenuAlimentos.cargarMenuDesdeCSV();
 
-        // Inicializar empleados de demostración
+        
         inicializarEmpleadosDemo();
 
         int opcion;
@@ -44,7 +44,7 @@ public class Main {
                     ejecutarDemo();
                     break;
                 case 7:
-                    System.out.println("\n¡Gracias por usar el sistema! ¡Hasta pronto! 👋");
+                    System.out.println("\n¡Gracias por usar el sistema! ¡Hasta pronto! ");
                     break;
             }
         } while (opcion != 7);
@@ -53,9 +53,9 @@ public class Main {
     }
 
     private static void inicializarEmpleadosDemo() {
-        // Crear empleados de demostración con datos aleatorios
-        String[] nombres = {"María González", "Carlos Rodríguez", "Ana Martínez", "Pedro López",
-                "Laura Hernández", "Jorge Díaz", "Sofía Pérez", "Miguel Castro"};
+        
+        String[] nombres = {"Marcos Gutiérrez", "Julieta Cárdenas", "Andrés Cervantes", "Patricia Morales",
+                "Laura Hernández", "Antonio Delgado", "Beatriz Herrera", "Camilo Vázquez"};
         String[] departamentos = {"Cocina", "Limpieza", "Barista"};
 
         java.util.Random random = new java.util.Random();
@@ -71,7 +71,7 @@ public class Main {
         }
     }
 
-    // Los demás métodos permanecen exactamente igual...
+    
     private static int obtenerEnteroEnRango(int min, int max, String mensajeError) {
         while (true) {
             try {
@@ -230,7 +230,7 @@ public class Main {
     private static void ejecutarDemo() {
         DemoCafeteria.ejecutarDemo();
 
-        // Pausa para que el usuario pueda ver los resultados
+        
         System.out.print("\nPresione Enter para continuar...");
         scanner.nextLine();
     }
