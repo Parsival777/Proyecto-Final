@@ -349,7 +349,7 @@ public class MenuAlimentos {
                 String lineaProducto = String.format("║   %-5d %-33s $%7.2f   ║",
                         pedido.cantidad, nombreProducto, subtotal);
                 System.out.println(lineaProducto);
-                System.out.println("║        Estado: " + String.format("%-33s", estado) + "║");
+                System.out.println("║        Estado: " + String.format("%-38s", estado) + "║");
 
                 if (pedido.comentarios != null && !pedido.comentarios.trim().isEmpty()
                         && !pedido.comentarios.equals("Sin comentarios") && !pedido.comentarios.contains("CANCELADO")) {
@@ -363,9 +363,9 @@ public class MenuAlimentos {
             }
 
             System.out.println("╠══════════════════════════════════════════════════════╣");
-            System.out.printf ("║        SUBTOTAL PROCESADOS:              $%10.2f║%n", totalProcesados);
+            System.out.printf ("║        SUBTOTAL PROCESADOS:               $%10.2f║%n", totalProcesados);
             if (totalCancelados > 0) {
-                System.out.printf ("║        PEDIDOS CANCELADOS:               $%10.2f║%n", totalCancelados);
+                System.out.printf ("║        PEDIDOS CANCELADOS:                $%10.2f║%n", totalCancelados);
             }
             System.out.printf ("║        TOTAL:                             $%10.2f║%n", totalProcesados);
             System.out.println("╚══════════════════════════════════════════════════════╝");
@@ -388,4 +388,3 @@ public class MenuAlimentos {
         }
     }
 }
-
