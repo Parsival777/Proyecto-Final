@@ -196,8 +196,12 @@ public class GestionMesas {
                         mesa.agregarPedido(pedido);
                         System.out.println("✓ Pedido agregado para comensal " + comensalActual);
 
-                        System.out.print("¿Agregar otro producto para este comensal? (1: Sí, 2: No): ");
-                        int otro = obtenerEnteroEnRango("", 1, 2);
+                        // CAMBIO APLICADO AQUÍ - Formato de lista numerada
+                        System.out.println("¿Agregar otro producto para este comensal?");
+                        System.out.println("1. Si");
+                        System.out.println("2. No");
+                        int otro = obtenerEnteroEnRango("Seleccione una opción: ", 1, 2);
+
                         if (otro == 2) {
                             pedidoCompletado = true;
                             comensalActual++;
