@@ -12,9 +12,9 @@ import java.util.Locale;
 import java.io.File;
 
 public class GestionMesas {
-    private static Map<Integer, Mesa> mesas = new HashMap<>();
+    // CAMBIADO A PUBLIC para que la demo pueda acceder
+    public static Map<Integer, Mesa> mesas = new HashMap<>();
     private static Scanner scanner = new Scanner(System.in);
-
 
     private static int obtenerEnteroValido(String mensaje) {
         while (true) {
@@ -100,7 +100,6 @@ public class GestionMesas {
             System.out.println("La mesa " + numeroMesa + " ya existe.");
             return;
         }
-
 
         int numComensales = obtenerEnteroEnRango("Ingrese el número de comensales: ", 1, 20);
         Mesa nuevaMesa = new Mesa(numeroMesa, numComensales);
@@ -197,7 +196,6 @@ public class GestionMesas {
                         mesa.agregarPedido(pedido);
                         System.out.println("✓ Pedido agregado para comensal " + comensalActual);
 
-
                         System.out.print("¿Agregar otro producto para este comensal? (1: Sí, 2: No): ");
                         int otro = obtenerEnteroEnRango("", 1, 2);
                         if (otro == 2) {
@@ -208,7 +206,6 @@ public class GestionMesas {
                         System.out.println("Error: Opción no válida.");
                     }
                 }
-
 
                 if (comensalActual > mesa.getNumeroComensales()) {
                     continuar = false;
@@ -268,7 +265,6 @@ public class GestionMesas {
     }
 
     private static void limpiarMesaEspecifica(Mesa mesa) {
-
         if (!mesa.estaVacia()) {
             System.out.println("\n Hay " + mesa.obtenerCantidadPedidosPendientes() + " pedidos pendientes por procesar.");
             System.out.println("1. Regresar al menú de la mesa");
@@ -282,7 +278,6 @@ public class GestionMesas {
                     System.out.println("Regresando al menú de la mesa...");
                     return;
                 case 2:
-
                     int pendientes = mesa.obtenerCantidadPedidosPendientes();
                     while (!mesa.estaVacia()) {
                         mesa.procesarPedido();
@@ -290,14 +285,12 @@ public class GestionMesas {
                     System.out.println("✓ " + pendientes + " pedidos procesados automáticamente.");
                     break;
                 case 3:
-
                     int cancelados = mesa.obtenerCantidadPedidosPendientes();
                     mesa.cancelarPedidosPendientes();
                     System.out.println("✓ " + cancelados + " pedidos marcados como cancelados.");
                     break;
             }
         }
-
 
         if (!mesa.estaVaciaProcesados() || !mesa.estaVaciaCancelados()) {
             MenuAlimentos.Ticket ticket = mesa.generarTicket();
@@ -314,14 +307,12 @@ public class GestionMesas {
     }
 
     private static void guardarTicketArchivo(MenuAlimentos.Ticket ticket) {
-
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MMM-yyyy", Locale.ENGLISH);
         String fecha = LocalDate.now().format(formatter).toUpperCase();
         String nombreArchivo = "Tickets_" + fecha + ".txt";
 
         try (FileWriter fw = new FileWriter(nombreArchivo, true);
              PrintWriter pw = new PrintWriter(fw)) {
-
 
             DateTimeFormatter horaFormatter = DateTimeFormatter.ofPattern("dd/MMM/yyyy HH:mm", Locale.ENGLISH);
             String horario = LocalDateTime.now().format(horaFormatter).toUpperCase();
@@ -342,7 +333,6 @@ public class GestionMesas {
                 if (nombreProducto.length() > 30) {
                     nombreProducto = nombreProducto.substring(0, 30) + "...";
                 }
-
 
                 boolean esCancelado = pedido.comentarios != null && pedido.comentarios.contains("CANCELADO");
                 String estado = esCancelado ? "✗ CANCELADO" : "✓ PROCESADO";
@@ -452,7 +442,6 @@ public class GestionMesas {
         public void cancelarPedidosPendientes() {
             while (!pedidosPendientes.isEmpty()) {
                 MenuAlimentos.PedidoMesa pedido = pedidosPendientes.poll();
-
                 pedido.comentarios = (pedido.comentarios.equals("Sin comentarios") ? "" : pedido.comentarios + " ") + "CANCELADO";
                 pedidosCancelados.add(pedido);
             }
@@ -506,11 +495,9 @@ public class GestionMesas {
         public MenuAlimentos.Ticket generarTicket() {
             MenuAlimentos.Ticket ticket = new MenuAlimentos.Ticket(numero);
 
-
             for (MenuAlimentos.PedidoMesa pedido : pedidosProcesados) {
                 ticket.agregarPedido(pedido);
             }
-
 
             for (MenuAlimentos.PedidoMesa pedido : pedidosCancelados) {
                 ticket.agregarPedido(pedido);
