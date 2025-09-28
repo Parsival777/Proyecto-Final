@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 public class DemoCafeteria {
     private static Random random = new Random();
@@ -29,9 +31,9 @@ public class DemoCafeteria {
         System.out.println("-".repeat(50));
         crearTareas();
 
-        System.out.println("\n4. TICKETS GENERADOS");
+        System.out.println("\n4. TICKETS Y MESAS");
         System.out.println("-".repeat(50));
-        generarTickets();
+        generarTicketsYMesas();
     }
 
     private static void crearEmpleados() {
@@ -157,7 +159,7 @@ public class DemoCafeteria {
         System.out.println("Tareas en cola de prioridad: " + GestionTareas.getColaTareas().size());
     }
 
-    private static void generarTickets() {
+    private static void generarTicketsYMesas() {
         String[] comentariosBebidasCalientes = {
                 "Extra caliente", "Sin azúcar", "Poca espuma", "Con leche deslactosada",
                 "Doble shot", "Con canela", "Templado"
@@ -178,21 +180,89 @@ public class DemoCafeteria {
                 "Frío", "Con salsa de chocolate", "Sin nueces"
         };
 
-        for (int i = 0; i < 3; i++) {
-            int numeroMesa = 1 + random.nextInt(10);
-            generarTicket(numeroMesa, comentariosBebidasCalientes, comentariosBebidasFrias,
+        System.out.println("\n=== GENERANDO 3 TICKETS COMPLETOS (MESAS CERRADAS) ===");
+
+        // 3 MESAS CERRADAS (con tickets generados)
+        for (int i = 1; i <= 3; i++) {
+            System.out.println("\n--- Mesa " + i + " (Cerrada con Ticket) ---");
+            generarMesaCerrada(i, comentariosBebidasCalientes, comentariosBebidasFrias,
                     comentariosComida, comentariosPostres);
-            System.out.println();
         }
+
+        System.out.println("\n=== CREANDO 2 MESAS ABIERTAS (CON PEDIDOS PENDIENTES) ===");
+
+        // 2 MESAS ABIERTAS (con pedidos pendientes)
+        for (int i = 4; i <= 5; i++) {
+            System.out.println("\n--- Mesa " + i + " (Abierta con Pedidos Pendientes) ---");
+            generarMesaAbierta(i, comentariosBebidasCalientes, comentariosBebidasFrias,
+                    comentariosComida, comentariosPostres);
+        }
+
+        System.out.println("\n✓ RESUMEN DE LA DEMO:");
+        System.out.println("• 3 mesas cerradas con tickets generados");
+        System.out.println("• 2 mesas abiertas con pedidos pendientes");
+        System.out.println("• Total mesas activas: " + GestionMesas.mesas.size());
+        System.out.println("✓ Demo completada - Las mesas están listas para gestión normal");
     }
 
-    private static void generarTicket(int numeroMesa, String[] comentariosCalientes,
-                                      String[] comentariosFrios, String[] comentariosComida,
-                                      String[] comentariosPostres) {
+    private static void generarMesaCerrada(int numeroMesa, String[] comentariosCalientes,
+                                           String[] comentariosFrios, String[] comentariosComida,
+                                           String[] comentariosPostres) {
 
-        MenuAlimentos.Ticket ticket = new MenuAlimentos.Ticket(numeroMesa);
+        // CREAR MESA
+        int numComensales = 1 + random.nextInt(4);
+        GestionMesas.Mesa mesa = new GestionMesas.Mesa(numeroMesa, numComensales);
+        GestionMesas.mesas.put(numeroMesa, mesa);
+        System.out.println("✓ Mesa " + numeroMesa + " creada con " + numComensales + " comensales");
 
-        int cantidadProductos = 3 + random.nextInt(3);
+        // AGREGAR PEDIDOS
+        int cantidadProductos = 2 + random.nextInt(3);
+        agregarPedidosAMesa(mesa, cantidadProductos, comentariosCalientes, comentariosFrios,
+                comentariosComida, comentariosPostres);
+
+        // PROCESAR TODOS LOS PEDIDOS (simular que ya se atendieron)
+        System.out.println("Procesando pedidos...");
+        int pedidosProcesados = 0;
+        while (!mesa.estaVacia()) {
+            mesa.procesarPedido();
+            pedidosProcesados++;
+        }
+        System.out.println("✓ " + pedidosProcesados + " pedidos procesados");
+
+        // GENERAR Y GUARDAR TICKET
+        MenuAlimentos.Ticket ticket = mesa.generarTicket();
+        ticket.mostrarTicket();
+        guardarTicketDemoArchivo(ticket);
+
+        // CERRAR LA MESA (eliminarla del sistema)
+        GestionMesas.mesas.remove(numeroMesa);
+        System.out.println("✓ Mesa " + numeroMesa + " cerrada y ticket guardado");
+    }
+
+    private static void generarMesaAbierta(int numeroMesa, String[] comentariosCalientes,
+                                           String[] comentariosFrios, String[] comentariosComida,
+                                           String[] comentariosPostres) {
+
+        // CREAR MESA
+        int numComensales = 1 + random.nextInt(4);
+        GestionMesas.Mesa mesa = new GestionMesas.Mesa(numeroMesa, numComensales);
+        GestionMesas.mesas.put(numeroMesa, mesa);
+        System.out.println("✓ Mesa " + numeroMesa + " creada con " + numComensales + " comensales");
+
+        // AGREGAR PEDIDOS PENDIENTES (no procesar)
+        int cantidadProductos = 2 + random.nextInt(3);
+        agregarPedidosAMesa(mesa, cantidadProductos, comentariosCalientes, comentariosFrios,
+                comentariosComida, comentariosPostres);
+
+        System.out.println("✓ " + cantidadProductos + " pedidos agregados (pendientes de procesar)");
+        System.out.println("✓ Mesa " + numeroMesa + " dejada abierta con " +
+                mesa.obtenerCantidadPedidosPendientes() + " pedidos pendientes");
+    }
+
+    private static void agregarPedidosAMesa(GestionMesas.Mesa mesa, int cantidadProductos,
+                                            String[] comentariosCalientes, String[] comentariosFrios,
+                                            String[] comentariosComida, String[] comentariosPostres) {
+
         int totalProductos = MenuAlimentos.obtenerCantidadProductos();
 
         for (int i = 0; i < cantidadProductos; i++) {
@@ -200,18 +270,17 @@ public class DemoCafeteria {
             MenuAlimentos.ProductoMenu producto = MenuAlimentos.buscarProductoPorID(idProducto);
 
             if (producto != null) {
-                int cantidad = 1 + random.nextInt(3);
+                int cantidad = 1 + random.nextInt(2);
                 String comentario = obtenerComentarioAleatorio(producto, comentariosCalientes,
                         comentariosFrios, comentariosComida, comentariosPostres);
 
                 MenuAlimentos.PedidoMesa pedido = new MenuAlimentos.PedidoMesa(producto, comentario, cantidad);
-                ticket.agregarPedido(pedido);
+                mesa.agregarPedido(pedido);
+
+                System.out.println("  • " + cantidad + "x " + producto.nombre + " - $" +
+                        String.format("%.2f", pedido.getSubtotal()));
             }
         }
-
-        ticket.mostrarTicket();
-
-        guardarTicketDemoArchivo(ticket);
     }
 
     private static void guardarTicketDemoArchivo(MenuAlimentos.Ticket ticket) {
@@ -281,15 +350,6 @@ public class DemoCafeteria {
 
         } catch (IOException e) {
             System.out.println("Error al guardar ticket de demo: " + e.getMessage());
-
-            java.io.File archivo = new java.io.File(nombreArchivo);
-            try {
-                archivo.getParentFile().mkdirs();
-                System.out.println("Directorios creados, intentando guardar nuevamente...");
-                guardarTicketDemoArchivo(ticket);
-            } catch (Exception ex) {
-                System.out.println("Error crítico al guardar ticket de demo: " + ex.getMessage());
-            }
         }
     }
 
