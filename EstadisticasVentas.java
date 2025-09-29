@@ -2,7 +2,6 @@ import java.util.*;
 import java.io.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 
 public class EstadisticasVentas {
     private static Scanner scanner = new Scanner(System.in);
@@ -231,26 +230,26 @@ public class EstadisticasVentas {
         System.out.println("\n=== RESUMEN DE VENTAS DEL DÍA ===");
         System.out.println("╔══════════════════════════════════════════════════════════════╗");
         System.out.println("║                      VENTAS DEL DÍA                          ║");
-        System.out.println("╠══════════╦══════════════╦════════════════╦══════════════════╣");
-        System.out.println("║   MESA   ║   PEDIDOS    ║     TOTAL      ║      FECHA       ║");
-        System.out.println("╠══════════╬══════════════╬════════════════╬══════════════════╣");
+        System.out.println("╠══════════╦══════════════╦════════════════╦═══════════════════╣");
+        System.out.println("║   MESA   ║   PEDIDOS    ║     TOTAL      ║      FECHA        ║");
+        System.out.println("╠══════════╬══════════════╬════════════════╬═══════════════════╣");
 
         int totalTickets = tickets.size();
         int totalPedidos = 0;
         double totalVentas = 0.0;
 
         for (TicketData ticket : tickets) {
-            System.out.printf("║ %8d ║ %12d ║ $%11.2f  ║ %16s ║\n",
+            System.out.printf("║ %8d ║ %12d ║ $%12.2f  ║ %17s ║\n",
                     ticket.numeroMesa, ticket.cantidadPedidos, ticket.total,
                     ticket.fecha.length() > 16 ? ticket.fecha.substring(0, 16) : ticket.fecha);
             totalPedidos += ticket.cantidadPedidos;
             totalVentas += ticket.total;
         }
 
-        System.out.println("╠══════════╬══════════════╬════════════════╬══════════════════╣");
-        System.out.printf("║ %8s ║ %12d ║ $%11.2f  ║ %16s ║\n",
+        System.out.println("╠══════════╬══════════════╬════════════════╬═══════════════════╣");
+        System.out.printf("║ %8s ║ %12d ║ $%11.2f   ║ %16s  ║\n",
                 "TOTAL", totalPedidos, totalVentas, totalTickets + " tickets");
-        System.out.println("╚══════════╩══════════════╩════════════════╩══════════════════╝");
+        System.out.println("╚══════════╩══════════════╩════════════════╩═══════════════════╝");
     }
 
     private static void calcularVentaTotalDia() {
@@ -265,7 +264,7 @@ public class EstadisticasVentas {
         System.out.println("╔══════════════════════════════════════════════════════════════╗");
         System.out.println("║                    VENTA TOTAL DEL DÍA                       ║");
         System.out.println("╠══════════════════════════════════════════════════════════════╣");
-        System.out.printf("║                 Total: $%33.2f ║\n", total);
+        System.out.printf("║                    Total: $%5.2f                           ║\n", total);
         System.out.println("╚══════════════════════════════════════════════════════════════╝");
     }
 
@@ -331,7 +330,7 @@ public class EstadisticasVentas {
         if (index >= tickets.length) {
             return;
         }
-        System.out.printf("║ %4d ║ %8d ║ %12d ║ $%11.2f  ║ %10s ║\n",
+        System.out.printf("║ %4d ║ %8d ║ %12d ║ $%11.2f   ║ %10s ║\n",
                 index + 1, tickets[index].numeroMesa, tickets[index].cantidadPedidos,
                 tickets[index].total, tickets[index].fecha.length() > 10 ?
                         tickets[index].fecha.substring(0, 10) : tickets[index].fecha);
@@ -339,34 +338,36 @@ public class EstadisticasVentas {
     }
 
     private static void buscarDatoVenta() {
-        List<TicketData> tickets = leerTicketsDelDia();
+    List<TicketData> tickets = leerTicketsDelDia();
 
-        if (tickets.isEmpty()) {
-            System.out.println("No hay tickets para buscar.");
-            return;
-        }
-
-        double objetivo = obtenerDoubleValido("Ingrese el monto a buscar: ");
-
-        TicketData[] ticketsArray = tickets.toArray(new TicketData[0]);
-        quicksortRecursivo(ticketsArray, 0, ticketsArray.length - 1);
-
-        int resultado = busquedaBinariaRecursiva(ticketsArray, objetivo, 0, ticketsArray.length - 1);
-
-        System.out.println("╔══════════════════════════════════════════════════════════════╗");
-        System.out.println("║                    BÚSQUEDA DE VENTA                         ║");
-        System.out.println("╠══════════════════════════════════════════════════════════════╣");
-
-        if (resultado != -1) {
-            System.out.printf("║ Monto $%.2f encontrado en la mesa %d\n",
-                    objetivo, ticketsArray[resultado].numeroMesa);
-            System.out.printf("║ Detalles: %d pedidos, fecha: %s\n",
-                    ticketsArray[resultado].cantidadPedidos, ticketsArray[resultado].fecha);
-        } else {
-            System.out.println("║ Monto no encontrado en ningún ticket.                    ║");
-        }
-        System.out.println("╚══════════════════════════════════════════════════════════════╝");
+    if (tickets.isEmpty()) {
+        System.out.println("No hay tickets para buscar.");
+        return;
     }
+
+    double objetivo = obtenerDoubleValido("Ingrese el monto a buscar: ");
+
+    TicketData[] ticketsArray = tickets.toArray(new TicketData[0]);
+    quicksortRecursivo(ticketsArray, 0, ticketsArray.length - 1);
+
+    int resultado = busquedaBinariaRecursiva(ticketsArray, objetivo, 0, ticketsArray.length - 1);
+
+    System.out.println("╔══════════════════════════════════════════════════════════════╗");
+    System.out.println("║                    BÚSQUEDA DE VENTA                         ║");
+    System.out.println("╠══════════════════════════════════════════════════════════════╣");
+    
+    if (resultado != -1) {
+        System.out.printf("║ Monto $%.2f encontrado en la mesa %d                        ║\n",
+                objetivo, ticketsArray[resultado].numeroMesa);
+        System.out.printf("║ Detalles: %d pedidos, fecha: %-20s             ║\n",
+                ticketsArray[resultado].cantidadPedidos, 
+                ticketsArray[resultado].fecha.length() > 15 ? 
+                ticketsArray[resultado].fecha.substring(0, 15) : ticketsArray[resultado].fecha);
+    } else {
+        System.out.println("║ Monto no encontrado en ningún ticket.                        ║");
+    }
+    System.out.println("╚══════════════════════════════════════════════════════════════╝");
+}
 
     private static int busquedaBinariaRecursiva(TicketData[] array, double objetivo, int inicio, int fin) {
         if (inicio > fin) {
