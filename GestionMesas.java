@@ -12,7 +12,7 @@ import java.util.Locale;
 import java.io.File;
 
 public class GestionMesas {
-    // CAMBIADO A PUBLIC para que la demo pueda acceder
+    
     public static Map<Integer, Mesa> mesas = new HashMap<>();
     private static Scanner scanner = new Scanner(System.in);
 
@@ -196,7 +196,7 @@ public class GestionMesas {
                         mesa.agregarPedido(pedido);
                         System.out.println("✓ Pedido agregado para comensal " + comensalActual);
 
-                        // CAMBIO APLICADO AQUÍ - Formato de lista numerada
+                        
                         System.out.println("¿Agregar otro producto para este comensal?");
                         System.out.println("1. Si");
                         System.out.println("2. No");
@@ -511,3 +511,4 @@ public class GestionMesas {
         }
     }
 }
+
