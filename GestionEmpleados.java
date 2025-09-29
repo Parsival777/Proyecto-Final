@@ -14,7 +14,7 @@ public class GestionEmpleados {
     }
 
     public static void menuGestionEmpleados() {
-        // Cargar empleados existentes al iniciar
+        
         if (raiz == null) {
             cargarEmpleadosDesdeArchivo();
         }
@@ -145,7 +145,7 @@ public class GestionEmpleados {
         Empleado nuevoEmpleado = new Empleado(id, nombre, departamento, salario);
         raiz = insertarRecursivo(raiz, nuevoEmpleado);
 
-        // Guardar en archivo
+        
         GestionArchivosEmpleados.guardarEmpleado(nuevoEmpleado);
 
         System.out.println("✓ Empleado agregado correctamente. ID: " + id);
@@ -156,7 +156,7 @@ public class GestionEmpleados {
         raiz = eliminarRecursivo(raiz, id);
         System.out.println("Empleado eliminado si existía.");
 
-        // Actualizar archivo después de eliminar
+        
         actualizarArchivoDesdeArbol();
     }
 
@@ -182,7 +182,7 @@ public class GestionEmpleados {
         if (confirmacion.equals("ELIMINAR")) {
             boolean eliminado = GestionArchivosEmpleados.eliminarBaseDatosEmpleados();
             if (eliminado) {
-                raiz = null; // Limpiar el árbol en memoria
+                raiz = null; 
                 System.out.println("✓ Base de datos de empleados eliminada correctamente.");
             } else {
                 System.out.println("No se encontró la base de datos de empleados o ya estaba vacía.");
@@ -273,7 +273,7 @@ public class GestionEmpleados {
         return calcularNominaRecursivo(nodo.derecho, conActual);
     }
 
-    // ========== MÉTODOS PÚBLICOS PARA TAREAS ==========
+    
     public static List<Empleado> obtenerEmpleadosPorDepartamento(String departamento) {
         List<Empleado> empleadosDepartamento = new ArrayList<>();
         recolectarEmpleadosPorDepartamentoRecursivo(raiz, departamento, empleadosDepartamento);
@@ -290,7 +290,7 @@ public class GestionEmpleados {
         }
     }
 
-    // ========== MÉTODOS DE ÁRBOL BINARIO ==========
+    
     private static NodoArbolEmpleados insertarRecursivo(NodoArbolEmpleados nodo, Empleado empleado) {
         if (nodo == null) {
             return new NodoArbolEmpleados(empleado);
@@ -340,7 +340,7 @@ public class GestionEmpleados {
         }
     }
 
-    // ========== CLASES INTERNAS ==========
+    
     static class NodoArbolEmpleados {
         Empleado empleado;
         NodoArbolEmpleados izquierdo;
@@ -373,9 +373,10 @@ public class GestionEmpleados {
         }
     }
 
-    // ========== MÉTODO PARA DEMO ==========
+    
     public static void agregarEmpleadoDemo(Empleado empleado) {
         raiz = insertarRecursivo(raiz, empleado);
         GestionArchivosEmpleados.guardarEmpleado(empleado);
     }
 }
+
