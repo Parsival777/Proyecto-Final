@@ -72,7 +72,7 @@ public class GestionTareas {
     }
 
     private static String seleccionarEmpleadoPorDepartamento(String departamento) {
-        // Obtener empleados del departamento seleccionado
+        
         List<GestionEmpleados.Empleado> empleados = GestionEmpleados.obtenerEmpleadosPorDepartamento(departamento);
 
         if (empleados.isEmpty()) {
@@ -376,7 +376,7 @@ public class GestionTareas {
         System.out.println("✓ Se eliminaron " + cantidad + " tareas de la cola.");
     }
 
-    // ========== CLASE TAREA ==========
+    
     static class Tarea {
         String descripcion;
         int prioridad;
@@ -399,7 +399,7 @@ public class GestionTareas {
         }
     }
 
-    // ========== MÉTODOS PÚBLICOS PARA DEMO ==========
+    
     public static void agregarTareaDemo(Tarea tarea) {
         colaTareas.add(tarea);
     }
