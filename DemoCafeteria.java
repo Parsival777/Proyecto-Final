@@ -42,7 +42,7 @@ public class DemoCafeteria {
                 "Daniela Romero", "Ricardo Silva", "Elena Castro", "Fernando Mendoza"};
         String[] departamentos = {"Limpieza", "Cocina", "Barista"};
 
-        // Cargar empleados existentes primero
+        
         List<GestionEmpleados.Empleado> empleadosExistentes = GestionArchivosEmpleados.cargarEmpleados();
 
         if (!empleadosExistentes.isEmpty()) {
@@ -52,14 +52,14 @@ public class DemoCafeteria {
                         emp.nombre, emp.departamento, emp.salario, emp.id);
             }
 
-            // Cargar empleados existentes al árbol en memoria
+            
             for (GestionEmpleados.Empleado emp : empleadosExistentes) {
                 GestionEmpleados.agregarEmpleadoDemo(emp);
             }
         } else {
             System.out.println("No hay empleados registrados. Agregando 10 empleados demo...");
 
-            // Generar empleados demo y guardarlos directamente en el archivo
+            
             List<GestionEmpleados.Empleado> empleadosDemo = new java.util.ArrayList<>();
             int ultimoID = GestionArchivosEmpleados.obtenerUltimoID();
 
@@ -73,19 +73,19 @@ public class DemoCafeteria {
                         new GestionEmpleados.Empleado(id, nombre, departamento, salario);
 
                 empleadosDemo.add(nuevoEmpleado);
-                // Agregar al árbol en memoria también
+                
                 GestionEmpleados.agregarEmpleadoDemo(nuevoEmpleado);
 
                 System.out.printf("• %s - %s - $%,.2f (ID: %d)\n",
                         nombre, departamento, salario, id);
             }
 
-            // Guardar todos los empleados demo en el archivo
+            
             GestionArchivosEmpleados.guardarListaEmpleados(empleadosDemo);
             System.out.println("✓ 10 empleados demo agregados al sistema y guardados en CSV");
         }
 
-        // Verificar que los empleados están cargados en memoria
+        
         System.out.println("\n✓ Empleados cargados en memoria para asignación de tareas");
     }
 
@@ -108,7 +108,7 @@ public class DemoCafeteria {
         };
 
         System.out.println("\n=== TAREAS EN COLA DE PRIORIDAD ===");
-        // Crear tareas para la cola de prioridades (sin procesar)
+        
         for (int i = 0; i < 14; i++) {
             String departamento;
             String[] tareasArray;
@@ -130,10 +130,10 @@ public class DemoCafeteria {
             }
 
             String descripcion = tareasArray[random.nextInt(tareasArray.length)];
-            int prioridad = 1 + random.nextInt(5); // Prioridad 1-5
-            int tiempo = 15 + random.nextInt(120); // 15-135 minutos
+            int prioridad = 1 + random.nextInt(5); 
+            int tiempo = 15 + random.nextInt(120); 
 
-            // Obtener empleados del departamento para asignar
+            
             List<GestionEmpleados.Empleado> empleados = GestionEmpleados.obtenerEmpleadosPorDepartamento(departamento);
             String empleadoAsignado;
 
@@ -141,13 +141,13 @@ public class DemoCafeteria {
                 System.out.println("⚠️  No hay empleados en " + departamento + ", asignando manualmente...");
                 empleadoAsignado = "Empleado por asignar";
             } else {
-                // Seleccionar un empleado aleatorio del departamento
+                
                 GestionEmpleados.Empleado empleadoSeleccionado = empleados.get(random.nextInt(empleados.size()));
                 empleadoAsignado = empleadoSeleccionado.nombre;
                 System.out.println("✓ Asignando a: " + empleadoSeleccionado.nombre + " (" + departamento + ")");
             }
 
-            // Usar la clase Tarea unificada
+            
             GestionTareas.Tarea tarea = new GestionTareas.Tarea(descripcion, prioridad, tiempo, departamento, empleadoAsignado);
             GestionTareas.agregarTareaDemo(tarea);
 
@@ -182,7 +182,7 @@ public class DemoCafeteria {
 
         System.out.println("\n=== GENERANDO 3 TICKETS COMPLETOS (MESAS CERRADAS) ===");
 
-        // 3 MESAS CERRADAS (con tickets generados)
+        
         for (int i = 1; i <= 3; i++) {
             System.out.println("\n--- Mesa " + i + " (Cerrada con Ticket) ---");
             generarMesaCerrada(i, comentariosBebidasCalientes, comentariosBebidasFrias,
@@ -191,7 +191,7 @@ public class DemoCafeteria {
 
         System.out.println("\n=== CREANDO 2 MESAS ABIERTAS (CON PEDIDOS PENDIENTES) ===");
 
-        // 2 MESAS ABIERTAS (con pedidos pendientes)
+        
         for (int i = 4; i <= 5; i++) {
             System.out.println("\n--- Mesa " + i + " (Abierta con Pedidos Pendientes) ---");
             generarMesaAbierta(i, comentariosBebidasCalientes, comentariosBebidasFrias,
@@ -209,18 +209,18 @@ public class DemoCafeteria {
                                            String[] comentariosFrios, String[] comentariosComida,
                                            String[] comentariosPostres) {
 
-        // CREAR MESA
+        
         int numComensales = 1 + random.nextInt(4);
         GestionMesas.Mesa mesa = new GestionMesas.Mesa(numeroMesa, numComensales);
         GestionMesas.mesas.put(numeroMesa, mesa);
         System.out.println("✓ Mesa " + numeroMesa + " creada con " + numComensales + " comensales");
 
-        // AGREGAR PEDIDOS
+        
         int cantidadProductos = 2 + random.nextInt(3);
         agregarPedidosAMesa(mesa, cantidadProductos, comentariosCalientes, comentariosFrios,
                 comentariosComida, comentariosPostres);
 
-        // PROCESAR TODOS LOS PEDIDOS (simular que ya se atendieron)
+        
         System.out.println("Procesando pedidos...");
         int pedidosProcesados = 0;
         while (!mesa.estaVacia()) {
@@ -229,12 +229,12 @@ public class DemoCafeteria {
         }
         System.out.println("✓ " + pedidosProcesados + " pedidos procesados");
 
-        // GENERAR Y GUARDAR TICKET
+        
         MenuAlimentos.Ticket ticket = mesa.generarTicket();
         ticket.mostrarTicket();
         guardarTicketDemoArchivo(ticket);
 
-        // CERRAR LA MESA (eliminarla del sistema)
+        
         GestionMesas.mesas.remove(numeroMesa);
         System.out.println("✓ Mesa " + numeroMesa + " cerrada y ticket guardado");
     }
@@ -243,13 +243,13 @@ public class DemoCafeteria {
                                            String[] comentariosFrios, String[] comentariosComida,
                                            String[] comentariosPostres) {
 
-        // CREAR MESA
+        
         int numComensales = 1 + random.nextInt(4);
         GestionMesas.Mesa mesa = new GestionMesas.Mesa(numeroMesa, numComensales);
         GestionMesas.mesas.put(numeroMesa, mesa);
         System.out.println("✓ Mesa " + numeroMesa + " creada con " + numComensales + " comensales");
 
-        // AGREGAR PEDIDOS PENDIENTES (no procesar)
+        
         int cantidadProductos = 2 + random.nextInt(3);
         agregarPedidosAMesa(mesa, cantidadProductos, comentariosCalientes, comentariosFrios,
                 comentariosComida, comentariosPostres);
